@@ -1,0 +1,4 @@
+Class HexenRPGHud : HexenHud//BaseStatusBar
+{
+
+}
