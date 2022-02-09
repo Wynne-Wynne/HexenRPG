@@ -45,7 +45,7 @@ class PaladinStaff : weaponbase
 		CSSF A 1 A_CStaffCheckBlink;
 		Goto Ready + 2;
 	Fire:
-        tnt1 a 0 a_checkattackresource(WAC_MAINATTACK,null,"actualready",WSC_NOMANA);
+        tnt1 a 0 a_checkattackresource(WAC_MAINATTACK,null,"OOMhold",WSC_NOMANA);
 		CSSF A 1 Offset (0, 45) ;//A_CStaffCheck;
 		CSSF J 1 Offset (0, 50)
         {
@@ -57,28 +57,32 @@ class PaladinStaff : weaponbase
 		CSSF J 2 Offset (0, 45);
 		CSSF A 2 Offset (0, 40);
 		CSSF A 2 Offset (0, 36);
-		Goto Ready+2;
+		tnt1 a 0 a_refire();
 	Blink:
-		CSSF BBBCCCCCBBB 1 A_WeaponReady(WRF_ALLOWZOOM);
+		CSSF BBBCCCCCBBB 1 A_WeaponReady(WRF_NOFIRE);
 		Goto Ready + 2;
 
     altfire:
-        tnt1 a 0 a_checkattackresource(WAC_SECONDARYATTACK,null,"actualready",WSC_NOMANA);
+        tnt1 a 0 a_checkattackresource(WAC_SECONDARYATTACK,null,"OOMhold",WSC_NOMANA);
         tnt1 a 0 a_jumpifinventory("Powerbitecooldown",1,"actualready");
-        CSSF A 3 a_startsound("snekbite");
-        tnt1 a 0
+        CSSF A 2 a_startsound("snekcharge");
+
+		CSSF K 2 ;//Offset (0, 36);
+        CSSF L 3 ;//Offset (0, 45);
+        CSSF M 2 Offset (0, 50)
         {
-            //A_staffbite();
-            a_custompunch(random(40,80),true,CPF_PULLIN,"CStaffPuff",96,0.5);
+            a_alertmonsters();
+            a_startsound("snekbite");
+            a_cstaffbite();
+            //a_custompunch(random(40,80),true,CPF_PULLIN,"CStaffPuff",96,0.5);
             a_giveinventory("BiteCooldown",1);
             a_takeresource(WAC_SECONDARYATTACK);
         }
-		CSSF K 2 Offset (0, 36);
-        CSSF L 7;
-        CSSF K 1;
-        //CSSF K 3;
-        //CSSF A 2;
-		Goto Ready+2;
+        CSSF M 2 Offset (0,45);
+        CSSF A 1 Offset (0,40);
+        CSSF A 1 Offset (0,36);
+		//Goto Ready+2;
+        goto blink;
     Zoom:
         tnt1 a 0
         {
@@ -89,6 +93,18 @@ class PaladinStaff : weaponbase
             }
         }
         goto ready+2;
+
+    OOMhold:
+        CSSF A 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH);
+        tnt1 a 0
+        {
+            if(PressingFire() || PressingAltfire() || PressingReload() || PressingZoom())
+            {
+                return resolvestate("OOMhold");
+            }
+            return resolvestate(null);
+        }
+		Goto Ready + 2;
 	}
 
 	//============================================================================
@@ -179,6 +195,21 @@ class PaladinStaff : weaponbase
 		A_StartSound ("ClericCStaffFire", CHAN_WEAPON);
 	}
 
+    action void A_CStaffBite()
+    {
+        if (player == null)
+		{
+			return;
+		}
+        Weapon weapon = player.ReadyWeapon;
+		if (weapon != null)
+		{
+			if (!weapon.DepleteAmmo (weapon.bAltFire))
+				return;
+		}
+        Actor mo = SpawnPlayerMissile ("SerpentStaffBiteMissile");
+    }
+
 	//============================================================================
 	//
 	// A_CStaffInitBlink
@@ -217,7 +248,7 @@ class powerBiteCooldown : Powerup
 {
     default
     {
-        powerup.duration -3;
+        powerup.duration -10;
     }
 }
 
@@ -228,6 +259,44 @@ class BiteCooldown : Powerupgiver
         Powerup.Type "PowerBiteCooldown";
         +inventory.AUTOACTIVATE
     }
+}
+
+class SerpentStaffBiteMissile : FastProjectile
+{
+    default
+    {
+        Radius 12;
+        Height 10;
+        Speed 66;
+        DamageFunction (random(30,60));
+        Projectile;
+        RenderStyle "Add";
+        //Translation "Green";
+        //Translation "0:255=%[0,0,0]:[0,1,0]";
+        scale 1.5;
+        //SeeSound "weapons/bowshoot"
+        //DeathSound "weapons/bowhit"
+    }
+    states
+    {
+        Spawn:
+            FX03 A 1 Bright;
+            Loop;
+        XDeath:
+            tnt1 a 0
+            {
+                a_spawnitemex("CStaffPuff");
+                a_damagetarget(-1*getmissiledamage(0,1)/2.0);
+                target.a_startsound("ClericCStaffHitThing",0,CHANF_OVERLAP );
+            }
+        Crash:
+        Death:
+            tnt1 a 0 a_startsound("clericcstaffexplode");
+            CSSF FG 4 Bright;
+            CSSF HI 3 Bright;
+            Stop;
+    }
+
 }
 
 

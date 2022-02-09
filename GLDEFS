@@ -17,3 +17,56 @@ pointlight ToNSprite
     size 9
     offset 0 0 0
 }
+
+pointlight CSTAFFBALL
+{
+    attenuate 1
+	color 0.0 1.0 0.0
+    size 60
+}
+
+flickerlight CSTAFFBALL_X1
+{
+    attenuate 1
+	color 0.0 1.0 0.0
+    size 84
+    secondarysize 96
+    chance 0.3
+}
+
+flickerlight CSTAFFBALL_X2
+{
+    attenuate 1
+	color 0.0 0.7 0.0
+    size 90
+    secondarysize 104
+    chance 0.3
+}
+
+flickerlight CSTAFFBALL_X3
+{
+    attenuate 1
+	color 0.0 0.5 0.0
+    size 96
+    secondarysize 108
+    chance 0.3
+}
+
+flickerlight CSTAFFBALL_X4
+{
+    attenuate 1
+	color 0.0 0.3 0.0
+    size 108
+    secondarysize 120
+    chance 0.3
+}
+
+object SerpentStaffBiteMissile
+{
+    frame FX03A { light CSTAFFBALL }
+
+    frame CSSFF { light CSTAFFBALL_X1 }
+    frame CSSFG { light CSTAFFBALL_X2 }
+    frame CSSFH { light CSTAFFBALL_X3 }
+    frame CSSFI { light CSTAFFBALL_X4 }
+}

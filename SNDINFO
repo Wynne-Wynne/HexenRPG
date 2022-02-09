@@ -11,11 +11,12 @@ petrcharge "Sounds/Petrcharge.wav"
 rocksmash "Sounds/Rocksmash.wav"
 $Limit rocksmash 1
 Nomana "sounds/Nomana.wav"
+snekbite "sounds/spit.wav"
 $pitchshiftrange 0
 Fixation "Sounds/Fixation.wav"
 Putrefaction "Sounds/Putrefaction.wav"
 Petr "Sounds/Petr.wav"
 Petr2 "Sounds/Petr2.wav"
-snekbite "sounds/bite.wav"
+snekcharge "sounds/spitcharge.wav"
 $Limit fixation 4
 $Limit putrefaction 4
