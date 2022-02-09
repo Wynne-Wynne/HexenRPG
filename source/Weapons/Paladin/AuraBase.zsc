@@ -1,0 +1,31 @@
+
+//used to ensure aura is only given once
+class aura : inventory
+{
+    default
+    {
+        inventory.maxamount 1;
+        Inventory.InterHubAmount 1;
+    }
+    states
+    {
+        held:
+        tnt1 a 1;
+        tnt1 a 1 a_jumpif(owner.bcorpse,"end");
+        loop;
+        end:
+        tnt1 a 1;
+        stop;
+    }
+}
+
+class AuraPowerupGiver : PowerupGiver abstract
+{
+    default
+    {
+        Powerup.duration 2;
+        inventory.maxamount 0;
+        +INVENTORY.AUTOACTIVATE;
+    }
+}
+

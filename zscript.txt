@@ -1,10 +1,13 @@
 version "4.7.1"
 
-#include "source/Projectiles.zs"
-#include "source/Classes.zs"
-#include "source/Weapons/Paladin/FixationAura.zs"
-#include "source/Weapons/weaponbase.zs"
-#include "source/Weapons/Paladin/Mace.zs"
+#include "source/Projectiles.zsc"
+#include "source/Classes.zsc"
+#include "source/Weapons/Paladin/FixationAura.zsc"
+#include "source/Weapons/Paladin/PutrefactionAura.zsc"
+#include "source/Weapons/weaponbase.zsc"
+#include "source/Weapons/Paladin/AuraBase.zsc"
+#include "source/Weapons/Paladin/Mace.zsc"
+#include "source/Weapons/Paladin/Staff.zsc"
 //#include "source/HUD.zs"
 
 

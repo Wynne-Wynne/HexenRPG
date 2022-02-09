@@ -2,7 +2,6 @@ class FixAuraPowerup : PowerProtection
 {
     default
     {
-        //DamageFactor .1, "fire", 0.25;
         DamageFactor "Fire", 0.5;
         activesound "FireHit";
     }
@@ -27,51 +26,26 @@ class Fixauradmg : powerDamage
 }
 
 //used to ensure aura is only given once
-class fixationaura : inventory
+class fixationaura : aura
 {
-    default
-    {
-        inventory.maxamount 1;
-        Inventory.InterHubAmount 0;
-    }
-    states
-    {
-        held:
-        tnt1 a 1;
-        tnt1 a 1 a_jumpif(owner.bcorpse,"end");
-        loop;
-        end:
-        tnt1 a 1;
-        stop;
-    }
     override void Travelled()
     {
-        GoAwayAndDie();
-    }
-}
-
-
-class fixationPowerupGiver : PowerupGiver abstract
-{
-    default
-    {
-        //Powerup.duration 0x7FFFFFFF; max duration
-        Powerup.duration 2;
-        inventory.maxamount 0;
-        +INVENTORY.AUTOACTIVATE;
+        goawayanddie();
+        owner.giveinventory("FixtAuraItem",1);
     }
 }
 
 
 
-class fixtauragiver : FixationPowerupGiver
+
+class fixtauragiver : AuraPowerupGiver
 {
     default
     {
         Powerup.type "FixAuraPowerUp";
     }
 }
-class fixtauradmggiver : FixationPowerupGiver
+class fixtauradmggiver : AuraPowerupGiver
 {
     default
     {
@@ -79,7 +53,7 @@ class fixtauradmggiver : FixationPowerupGiver
     }
 }
 
-class fixtauradefgiver : FixationPowerupGiver
+class fixtauradefgiver : AuraPowerupGiver
 {
     default
     {
@@ -97,7 +71,6 @@ class fixtauraitemothers : fixtauraitem
         let maxproj = 1;
         //console.printf(toucher.getclassname() );
         let itemamount = toucher.countinv("FixationAura");
-
         if (itemamount > 0)
         {
             goawayanddie();
@@ -112,8 +85,6 @@ class fixtauraitemothers : fixtauraitem
             toucher.giveinventorytype("FixtAuradefGiver");
             toucher.giveinventorytype("FixtAuradmgGiver");
             toucher.giveinventorytype("fixationaura");
-
-
             for(int i = 0; i < maxproj;i++)
             {
                 let proj = Spawn('FixationAuraCircleOthers', toucher.pos);
@@ -123,11 +94,8 @@ class fixtauraitemothers : fixtauraitem
                     // Assign the orbiting projectile's target
                     // so that it won't disapepar.
                     proj.target = toucher;
-
                 }
             }
-
-
             // Remove this item from play.
             GoAwayAndDie();
             return true;
@@ -135,7 +103,7 @@ class fixtauraitemothers : fixtauraitem
     }
 }
 
-class FixtAuraItem : FixationPowerupGiver
+class FixtAuraItem : AuraPowerupGiver
 {
     default
     {
@@ -153,7 +121,7 @@ class FixtAuraItem : FixationPowerupGiver
         else
         {
             a_startsound("Fixation",0,CHANF_OVERLAP,1.0,ATTN_NONE);
-            toucher.A_setblend("goldenrod",.8,50);
+            toucher.a_setblend("goldenrod",.8,50);
             toucher.giveinventorytype("FixtAuraTriangles");
             toucher.giveinventorytype("FixtAuraGiver");
             toucher.giveinventorytype("FixtAuradefGiver");
@@ -170,8 +138,6 @@ class FixtAuraItem : FixationPowerupGiver
                     proj.target = toucher;
                 }
             }
-
-
             // Remove this item from play.
             GoAwayAndDie();
             return true;
@@ -236,6 +202,9 @@ class FireAura: FixationAuraCircle
             FRAU AAAABBBBBCCCCDDDDDEEEEFFFFGGGG 1 light("FireSprite") BRIGHT
             {
                 A_Orbit(48, 1, 3, TRUE);
+                if(checkinventory("fixationaura",1,aaptr_target) < 1)
+                    return resolvestate("null");
+                return resolvestate(null);
             }
             tnt1 a 0 a_jumpifintargetinventory("FixationAura",1,"rotate");
             stop;
@@ -285,8 +254,8 @@ class FixationAuraCircleOthers : FixationAuraCircle
             }
             tnt1 a 0 a_checkProximity("Checkded","fixationauracircle",512,1);
             tnt1 a 0 a_takeinventory("fixationaura",1,0,aaptr_target);
-            //stop;
-            goto spinend;
+            stop;
+            //goto spinend;
     }
 }
 
@@ -302,7 +271,6 @@ class FixationAuraCircle : OrbitingProjectile
         +nointeraction
         +floorhugger
         -CastSpriteShadow
-       // Alpha 0.45;
         scale 0.5;
     }
     states
@@ -324,10 +292,10 @@ class FixationAuraCircle : OrbitingProjectile
                     user_ticcount = 0;
             }
             tnt1 a 0 a_jumpifintargetinventory("FixationAura",1,"rotate");
+            stop;
         spinend:
             FIXT A 1 light("WraithSprite") BRIGHT
             {
-               // a_log("aura going down");
                   A_Orbit(0, 1, 3);
                   if (alpha > 0.0)
                   {
@@ -336,7 +304,6 @@ class FixationAuraCircle : OrbitingProjectile
                   }
                   else
                   {
-                    //a_log("no more aura");
                     return resolvestate("trueend");
                   }
                   return resolvestate(Null);

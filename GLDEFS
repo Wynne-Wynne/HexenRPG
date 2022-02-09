@@ -11,3 +11,9 @@ pointlight FireSprite
     size 4
     Offset 0 0 0
 }
+pointlight ToNSprite
+{
+    color .25 1.0 .0
+    size 9
+    offset 0 0 0
+}

@@ -202,7 +202,10 @@ class PaladinMace : WeaponBase //CWeapMace
         tnt1 a 0
         {
             if(countinv("fixationaura") < 1)
+            {
+                takeinventory("putrefactionaura",1);
                 giveinventory("fixtauraitem",1);
+            }
         }
         goto ready;
     Reload:

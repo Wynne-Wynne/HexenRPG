@@ -1,0 +1,7 @@
+#library "maps"
+#include "zcommon.acs"
+
+script "changemaptest" (void) net
+{
+    Changelevel("MAP02",0,CHANGELEVEL_NOINTERMISSION,-1);
+}

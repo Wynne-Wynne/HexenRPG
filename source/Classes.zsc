@@ -11,12 +11,25 @@ class Paladin : clericplayer
         Player.displayName "Paladin";
         Player.StartItem "PaladinMace";
         Player.WeaponSlot 1, "PaladinMace";
+        Player.WeaponSlot 2, "PaladinStaff";
         Player.startitem "mana2",200;
         Player.startitem "mana1",200;
         +dontBlast
         Paladin.StaminaRegeneration true;
         Paladin.ManaRegeneration true;
     }
+    override int damagemobj(Actor inflictor, Actor source, int damage, Name mod, int flags, double angle)
+    {
+        //null check just in case
+        if (!source || !inflictor || !source.bismonster) return super.damagemobj(inflictor,source,damage,mod,flags,angle);;
+        if(countinv("putrefactionaura") > 0)
+        {
+            source.a_spawnitemex("reflectPuff",4,0,42,0,0,1,0,SXF_NOCHECKPOSITION|SXF_SETTRACER);
+            a_startsound("reflect",0,0,1.0,ATTN_NONE);
+        }
+        return super.damagemobj(inflictor,source,damage,mod,flags,angle);
+    }
+
     override void Tick()
 	{
         Super.Tick();
@@ -34,15 +47,16 @@ class Paladin : clericplayer
 	}
     void ManaRegen()
     {
+        let regenamount = (countinv("putrefactionaura") > 0) ? 2:1;
         //mana and stamina is 200 base for cleric
         if(countinv("Mana1") >= 200)
             setinventory("mana1",200);
         else if(ManaRegeneration)
-            giveinventory("Mana1",1);
+            giveinventory("Mana1",regenamount);
 
          if(countinv("Mana2") >= 200)
             setinventory("mana2",200);
         else if(StaminaRegeneration)
-            giveinventory("Mana2",1);
+            giveinventory("Mana2",regenamount);
     }
 }

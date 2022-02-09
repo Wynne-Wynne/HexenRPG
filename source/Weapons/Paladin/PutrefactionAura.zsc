@@ -1,0 +1,207 @@
+class putrefactionaura : aura
+{
+    override void travelled()
+    {
+        goawayanddie();
+        owner.giveinventory("PutrAuraItem",1);
+    }
+}
+
+class PutrThorns : powerreflection
+{
+    default
+    {
+        DamageFactor 5.0;
+    }
+}
+
+class Putraurathornsgiver : AuraPowerupGiver
+{
+    default
+    {
+        Powerup.type "PutrThorns";
+    }
+}
+
+class putrauraitem : AuraPowerupGiver
+{
+    default
+    {
+        inventory.maxamount 1;
+    }
+    override bool TryPickup(out Actor toucher)
+    {
+        // Spawn an orbiting projectile at the toucher's position.
+        let maxproj = 1;
+        if (toucher.countinv("PutrefactionAura") > 0)
+        {
+            goawayanddie();
+            return false;
+        }
+        else
+        {
+            a_startsound("Putrefaction",0,CHANF_OVERLAP,1.0,ATTN_NONE);
+            toucher.a_setblend("olivedrab3",.8,50);
+            toucher.giveinventorytype("sagittarius");
+            toucher.giveinventorytype("Putraurathornsgiver");
+           // toucher.giveinventorytype("FixtAuradefGiver");
+            //toucher.giveinventorytype("FixtAuradmgGiver");
+            toucher.giveinventorytype("Putrefactionaura");
+            for(int i = 0; i < maxproj;i++)
+            {
+                let proj = Spawn('PutrefactionAuraCircle', toucher.pos);
+                if (proj)
+                {
+                    proj.angle = angle+(i*(360/maxproj));
+                    // Assign the orbiting projectile's target
+                    // so that it won't disapepar.
+                    proj.target = toucher;
+                }
+            }
+            // Remove this item from play.
+            GoAwayAndDie();
+            return true;
+        }
+    }
+}
+
+class Sagittarius : Inventory
+{
+    override bool TryPickup(out Actor toucher)
+    {
+        // Spawn an orbiting projectile at the toucher's position.
+        let maxproj = 1;
+        for(int i = 0; i < maxproj;i++)
+        {
+            let proj = Spawn('sagttaura', toucher.pos);
+            if (proj)
+            {
+                proj.angle = angle+(i*(360/maxproj));
+                // Assign the orbiting projectile's target
+                // so that it won't disapepar.
+                proj.target = toucher;
+            }
+        }
+        // Remove this item from play.
+        GoAwayAndDie();
+        return true;
+    }
+}
+
+class sagttAura: PutrefactionAuraCircle
+{
+    //find it hard to believe this isn't already a standard function but here you go
+    double abs (double x)
+    {
+        if (x < 0)
+            return -x;
+        return x;
+    }
+    states
+    {
+        spawn:
+        rotate:
+            Putr B 1 light("ToNSprite") BRIGHT
+            {
+                //don't ask me how the fuck i managed to do this
+                //sometimes dicking around in a graphing calculator just werks
+                let angspeed = (8*abs(3*cos(3*gametic))-10);
+                angspeed = -7*tanh(0.3*angspeed)+10;
+                A_Orbit(56, 1, angspeed , TRUE);
+            }
+            tnt1 a 0 a_jumpifintargetinventory("PutrefactionAura",1,"rotate");
+            stop;
+            //goto spinend;
+    }
+}
+
+class PutrefactionAuraCircle : OrbitingProjectile
+{
+    int user_ticcount;
+    default
+    {
+        +flatSprite
+        +xflip
+        Renderstyle "Translucent";
+        +bright
+       // Stencilcolor "Goldenrod";
+        +nointeraction
+        +floorhugger
+        -CastSpriteShadow
+        scale 0.5;
+        alpha 0.8;
+    }
+    states
+    {
+        spawn:
+        tnt1 a 0 { user_ticcount = 0; }
+        rotate:
+            PUTR A 1 light("ToNSprite") BRIGHT
+            {
+                A_Orbit(0, 1, 1.5);
+                a_giveinventory("PutrAuraTHornsGiver",1,AAPTR_Target);
+                //a_giveinventory("fixtauradefgiver",1,AAPTR_Target);
+               // a_giveinventory("fixtauragiver",1,AAPTR_Target);
+                if (++user_ticcount % 5 == 0)
+                {
+                    //a_radiusgive("fixtauraitemothers",512.0,RGF_PLAYERS|RGF_NOSIGHT,1);
+                }
+                if(user_ticcount > 60)
+                    user_ticcount = 0;
+            }
+            tnt1 a 0 a_jumpifintargetinventory("PutrefactionAura",1,"rotate");
+            stop;
+        spinend:
+            //#### # 0 a_log("deded");
+            #### #  1 light("ToNSprite") BRIGHT
+            {
+                  A_Orbit(0, 1, 1.5);
+                  if (alpha > 0.0)
+                  {
+                    alpha -=0.1;
+                    a_setrenderstyle(alpha,STYLE_Translucent);
+                  }
+                  else
+                  {
+                    return resolvestate("trueend");
+                  }
+                  return resolvestate(Null);
+            }
+            loop;
+            trueend:
+            tnt1 a 0;
+            stop;
+
+    }
+}
+
+class reflectPuff : Actor
+{
+    default
+    {
+        scale 0.2;
+        +NOBLOCKMAP
+		+NOGRAVITY
+        +FORCEXYBILLBOARD
+        +PUFFONACTORS
+        +PUFFGETSOWNER
+        +HITTRACER
+        alpha 0.8;
+        //+forcepain
+        renderstyle "translucent";
+    }
+    states
+    {
+        spawn:
+        tnt1 a 0 light("ToNSprite") BRIGHT a_startsound("reflect");
+        BITE AABBCCDDEEFF 1 light("ToNSprite") BRIGHT
+        {
+            if ( !tracer ) return ResolveState(null);
+            A_Warp(AAPTR_TRACER, 2, 0, 42, 0, WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE,null,0);
+            return resolvestate(null);
+        }
+        daeded:
+        BITE # 1  light("ToNSprite") BRIGHT a_fadeout();
+        loop;
+    }
+}
