@@ -56,6 +56,11 @@ Class WeaponBase : Weapon
 
     action void A_TakeResource(int AttackType)
     {
+        //activate global cooldown
+        //TODO: replace this with generic playerpawn class that all player
+        //classes will inherit from
+        paladin(self).globalcooldown();
+
         switch(AttackType)
         {
             case WAC_MAINATTACK:

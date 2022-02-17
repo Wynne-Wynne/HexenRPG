@@ -187,8 +187,9 @@ class reflectPuff : Actor
         +PUFFGETSOWNER
         +HITTRACER
         alpha 0.8;
+
         //+forcepain
-        renderstyle "translucent";
+        renderstyle "Add";
     }
     states
     {

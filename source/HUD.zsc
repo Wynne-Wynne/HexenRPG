@@ -1,4 +1,156 @@
-Class HexenRPGHud : HexenHud//BaseStatusBar
+class HexenRPGHud : BaseStatusBar
 {
+    HUDFont mHUDFont;
+	HUDFont mIndexFont;
+	HUDFont mBigFont;
+	InventoryBarState diparms;
+	InventoryBarState diparms_sbar;
+    DynamicValueInterpolator mHealthInterpolator, mManaInterpolator, mStaminaInterpolator;
+
+    override void Init()
+	{
+		Super.Init();
+		SetSize(44, 320, 200);
+
+		// Create the font used for the fullscreen HUD
+		Font fnt = "HUDFONT_RAVEN";
+		mHUDFont = HUDFont.Create(fnt, fnt.GetCharWidth("0") + 1, Mono_CellLeft, 1, 1);
+		fnt = "INDEXFONT_RAVEN";
+		mIndexFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), Mono_CellLeft);
+		fnt = "BIGFONT";
+		mBigFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), Mono_CellLeft, 2, 2);
+		diparms = InventoryBarState.Create(mIndexFont);
+		diparms_sbar = InventoryBarState.CreateNoBox(mIndexFont, boxsize:(31, 31), arrowoffs:(0,-10));
+		mHealthInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
+        mManaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
+        mStaminaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
+	}
+
+
+	override void Draw (int state, double TicFrac)
+	{
+        completeborder = true;
+		Super.Draw (state, TicFrac);
+        if (state == HUD_StatusBar)
+		{
+			BeginStatusBar();
+			DrawMainBar(TicFrac);
+            //drawfullscreenstuff();
+		}
+		else if (state == HUD_Fullscreen)
+		{
+			BeginHUD();
+			DrawFullScreenStuff ();
+		}
+	}
+
+    void DrawMainBar(double TicFrac) {
+        DrawImage("HBAR", (-16, 135), DI_ITEM_OFFSETS|DI_ITEM_CENTER);
+	}
+
+    override void NewGame ()
+	{
+		Super.NewGame();
+		mHealthInterpolator.Reset (0);
+        mManaInterpolator.Reset (0);
+        mStaminaInterpolator.Reset (0);
+    }
+
+    override void Tick()
+	{
+		Super.Tick();
+		mHealthInterpolator.Update(CPlayer.health);
+        Inventory man = CPlayer.mo.FindInventory("Mana1"),
+                stam = CPlayer.mo.FindInventory("Mana2");
+		if (man) mManaInterpolator.Update(man.Amount);
+        if (stam) mStaminaInterpolator.Update(stam.Amount);
+
+    }
+
+	protected void DrawFullScreenStuff ()
+	{
+
+        drawbar("horb","norb",mhealthinterpolator.getvalue(),100,(-129,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+
+
+        drawbar("morb","norb2",mManaInterpolator.getvalue(),200,(79,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        drawbar("sorb","norb2",mStaminaInterpolator.getvalue(),200,(107,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+
+        DrawImage("HBAR", (-176, -65), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+
+        //DrawBar("MANAVL2D", "", amt2, maxamt2, (102, 164), 1, SHADER_VERT, DI_ITEM_OFFSETS);
+        //drawbar(
+
+		DrawImage("PTN1A0", (60, -3));
+		DrawString(mBigFont, FormatNumber(mHealthInterpolator.GetValue()), (41, -21), DI_TEXT_ALIGN_RIGHT);
+
+        static const int iconoffsets[] = {
+            320-(56+5),
+            320-(28+2),
+            320+1,
+            320+(28+3)
+        };
+
+
+        int key1, key2;
+        [key1, key2] = Bindings.GetKeysForCommand("+attack");
+        //console.printf("%s",Bindings.namekeys(key1,key2));
+
+        let wep = Weapon(CPlayer.ReadyWeapon);
+		if (wep)
+		{
+            if(wep.gettag() == "Mace of Attrition")
+            {
+                let drawflags = DI_ITEM_OFFSETS;
+                if(CPLAYER.mo.findinventory("mana2").amount < 6)
+                {
+                    drawflags = drawflags|DI_DIM;
+                }
+                let drawflags2 = DI_ITEM_OFFSETS;
+                if(CPLAYER.mo.findinventory("mana1").amount < 40)
+                {
+                    drawflags2 = drawflags|DI_DIM;
+                }
+                //DrawImage("PENCA0", (iconoffsets[0],-34),drawflags,1.0,(-1,-1),(0.5,0.5));
+                DrawImage("PENCA0", (iconoffsets[0],-35),drawflags);
+                DrawImage("PENCA0", (iconoffsets[1],-35),drawflags2);
+                DrawImage("PENCA0", (iconoffsets[2],-35),drawflags);
+                DrawImage("PENCA0", (iconoffsets[3],-35),drawflags);
+            }
+        }
+
+		//DrawString(mBigFont, FormatNumber(GetArmorSavePercent() / 5, 2), (41, -41), DI_TEXT_ALIGN_RIGHT);
+
+
+
+
+		if (!isInventoryBarVisible() && !Level.NoInventoryBar && CPlayer.mo.InvSel != null)
+		{
+			// This code was changed to always fit the item into the box, regardless of alignment or sprite size.
+			// Heretic's ARTIBOX is 30x30 pixels.
+			DrawImage("ARTIBOX", (-66, -1), 0, HX_SHADOW);
+			DrawInventoryIcon(CPlayer.mo.InvSel, (-66, -15), DI_ARTIFLASH|DI_ITEM_CENTER|DI_DIMDEPLETED, boxsize:(28, 28));
+			if (CPlayer.mo.InvSel.Amount > 1)
+			{
+				DrawString(mIndexFont, FormatNumber(CPlayer.mo.InvSel.Amount, 3), (-52, -2 - mIndexFont.mFont.GetHeight()), DI_TEXT_ALIGN_RIGHT);
+			}
+		}
+
+		Ammo ammo1, ammo2;
+		[ammo1, ammo2] = GetCurrentAmmo();
+		if ((ammo1 is "Mana1") || (ammo2 is "Mana1")) DrawImage("MANABRT1", (-17, -30), DI_ITEM_OFFSETS);
+		else DrawImage("MANADIM1", (-17, -30), DI_ITEM_OFFSETS);
+		if ((ammo1 is "Mana2") || (ammo2 is "Mana2")) DrawImage("MANABRT2", (-17, -15), DI_ITEM_OFFSETS);
+		else DrawImage("MANADIM2", (-17, -15), DI_ITEM_OFFSETS);
+		DrawString(mHUDFont, FormatNumber(GetAmount("Mana1"), 3), (-21, -30), DI_TEXT_ALIGN_RIGHT);
+		DrawString(mHUDFont, FormatNumber(GetAmount("Mana2"), 3), (-21, -15), DI_TEXT_ALIGN_RIGHT);
+
+		if (isInventoryBarVisible())
+		{
+			DrawInventoryBar(diparms, (0, 0), 7, DI_SCREEN_CENTER_BOTTOM, HX_SHADOW);
+		}
+	}
+
 
 }
+

@@ -8,7 +8,7 @@ version "4.7.1"
 #include "source/Weapons/Paladin/AuraBase.zsc"
 #include "source/Weapons/Paladin/Mace.zsc"
 #include "source/Weapons/Paladin/Staff.zsc"
-//#include "source/HUD.zs"
+#include "source/HUD.zsc"
 
 
 

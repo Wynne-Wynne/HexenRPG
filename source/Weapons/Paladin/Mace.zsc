@@ -8,9 +8,9 @@ class PaladinMace : WeaponBase //CWeapMace
 		Weapon.YAdjust -8;
 		+BLOODSPLATTER
         +Weapon.noalert
-        WeaponBase.MainAttackCost 0,10; // multiples of this are used for different combo costs
+        WeaponBase.MainAttackCost 0,5; // multiples of this are used for different combo costs
         weaponbase.ChargeAttackCost 0,30;
-        weaponbase.SecondaryAttackCost 0,15;
+        weaponbase.SecondaryAttackCost 0,10;
         weaponbase.SpecialAttackCost 80,0;
         weaponbase.SupportSkillCost 0,0;
 		Tag "Mace of Attrition";
@@ -71,7 +71,7 @@ class PaladinMace : WeaponBase //CWeapMace
                 if(countinv("mana2") > 0) takeinventory("mana2",1);
             }
 
-            A_CheckResource(1,"mana2",null,"MaceContinue");
+            A_CheckResource(1,"mana2",null,"MaceContinue",-1);
         }
         tnt1 a 0 a_refire("MaceHold");
         tnt1 a 0 { paladin(self).StaminaRegeneration = true; }

@@ -1,6 +1,6 @@
 class Paladin : clericplayer
 {
-    int tickcount;
+    int ticcount;
     bool ManaRegeneration;
     bool StaminaRegeneration;
 
@@ -30,6 +30,11 @@ class Paladin : clericplayer
         return super.damagemobj(inflictor,source,damage,mod,flags,angle);
     }
 
+    override void postbeginplay()
+    {
+        super.postbeginplay();
+        ticcount = 0;
+    }
     override void Tick()
 	{
         Super.Tick();
@@ -37,14 +42,23 @@ class Paladin : clericplayer
         {
             return;
         }
-        tickcount++;
-        if(tickcount == 5) // regen every 5th tick
+        if (ticcount > 0)
+        {
+            ticcount--;
+            return;
+        }
+        if(gametic%5 == 0) // regen every 5th tic
         {
             ManaRegen();
-            tickcount = 0;
         }
-
 	}
+
+    void GlobalCoolDown()
+    {
+        //number of tics the game pauses mana regen for
+        ticcount = countinv("putrefactionaura") > 0 ? 18 : 35;
+    }
+
     void ManaRegen()
     {
         let regenamount = (countinv("putrefactionaura") > 0) ? 2:1;
