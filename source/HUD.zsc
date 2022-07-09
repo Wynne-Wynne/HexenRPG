@@ -3,9 +3,11 @@ class HexenRPGHud : BaseStatusBar
     HUDFont mHUDFont;
 	HUDFont mIndexFont;
 	HUDFont mNumHud;
+    HUDFont smallfont;
 	InventoryBarState diparms;
 	InventoryBarState diparms_sbar;
     DynamicValueInterpolator mHealthInterpolator, mManaInterpolator, mStaminaInterpolator;
+    Array<string> keys;
 
     override void Init()
 	{
@@ -21,12 +23,33 @@ class HexenRPGHud : BaseStatusBar
         fnt = "indexfont";
 		mNumHud = HUDFont.Create(fnt, fnt.GetCharWidth("0"), Mono_CellLeft, 0, 0);
 
+        fnt = "SMALLFONT";
+        smallfont = HUDFont.Create(fnt);
+
 		diparms = InventoryBarState.Create(mIndexFont);
 		diparms_sbar = InventoryBarState.CreateNoBox(mIndexFont, boxsize:(31, 31), arrowoffs:(0,-10));
 
 		mHealthInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
         mManaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
         mStaminaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
+
+
+        // key binds
+
+
+        keys.push(Bindings.namekeys(Bindings.GetKeysForCommand("+attack"),0));
+        keys.push(Bindings.namekeys(Bindings.GetKeysForCommand("+altattack"),0));
+        keys.push(Bindings.namekeys(Bindings.GetKeysForCommand("+reload"),0));
+        keys.push(Bindings.namekeys(Bindings.GetKeysForCommand("+zoom"),0));
+
+
+        for(int i = 0;i<4;i++)
+        {
+            if(keys[i].Length() > 1)
+                keys[i] = keys[i].left(1)..keys[i].mid(keys[i].Length()-1,1);
+        }
+
+
 	}
 
 
@@ -86,9 +109,7 @@ class HexenRPGHud : BaseStatusBar
         DrawString(mNumHud, FormatNumber(mManaInterpolator.GetValue()), (90, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
         DrawString(mNumHud, FormatNumber(mStaminaInterpolator.GetValue()), (110, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
-        int key1, key2;
-        [key1, key2] = Bindings.GetKeysForCommand("+attack");
-        console.printf("%s",Bindings.namekeys(key1,key2));
+
 
         let wep = Weapon(CPlayer.ReadyWeapon);
 		if (wep)
@@ -96,6 +117,7 @@ class HexenRPGHud : BaseStatusBar
             if(wep.gettag() == "Mace of Attrition")
             {
                 let drawflags = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
+                let drawflags_int = drawflags;
 
 
                 if(CPLAYER.mo.findinventory("mana2").amount < 5)
@@ -112,9 +134,12 @@ class HexenRPGHud : BaseStatusBar
                 {
                     drawflags3 = drawflags|DI_DIM;
                 }
-
+                // Draw ability icons
                 DrawImage("PENCA0", (-72.8,-35),drawflags);
+                DrawString(smallfont,keys[0],(-72.8,-35),drawflags_int);
+
                 DrawImage("SHOVA0", (-35.25,-35),drawflags2);
+                DrawString(smallfont,keys[1],(-35.25,-35),drawflags_int);
 
                 if(CPLAYER.mo.findinventory("FixationAura"))
                 {
@@ -124,7 +149,9 @@ class HexenRPGHud : BaseStatusBar
                 {
                     DrawImage("PTRIA0", (1.95,-35),drawflags3);
                 }
+                DrawString(smallfont,keys[2],(1.95,-35),drawflags_int);
                 DrawImage("PAURA0", (39,-35),drawflags);
+                DrawString(smallfont,keys[3],(39,-35),drawflags_int);
             }
         }
 
