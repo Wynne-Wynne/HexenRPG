@@ -47,7 +47,7 @@ class Paladin : clericplayer
             ticcount--;
             return;
         }
-        if(gametic%5 == 0) // regen every 5th tic
+        if(gametic%3 == 0) // regen every 5th tic
         {
             ManaRegen();
         }
@@ -56,12 +56,12 @@ class Paladin : clericplayer
     void GlobalCoolDown()
     {
         //number of tics the game pauses mana regen for
-        ticcount = countinv("putrefactionaura") > 0 ? 18 : 35;
+        ticcount = countinv("putrefactionaura") > 0 ? 25 : 50;
     }
 
     void ManaRegen()
     {
-        let regenamount = (countinv("putrefactionaura") > 0) ? 4:2;
+        let regenamount = (countinv("putrefactionaura") > 0) ? 2:1;
         //mana and stamina is 200 base for cleric
         if(countinv("Mana1") >= 200)
             setinventory("mana1",200);

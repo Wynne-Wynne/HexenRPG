@@ -98,27 +98,26 @@ class HexenRPGHud : BaseStatusBar
 
         drawbar("horb","norb",mhealthinterpolator.getvalue(),100,(-129,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
-
         drawbar("morb","norb2",mManaInterpolator.getvalue(),200,(79,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
         drawbar("sorb","norb2",mStaminaInterpolator.getvalue(),200,(107,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
         DrawImage("HBAR", (-176, -65), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
 		// hud numbers
-		DrawString(mNumHud, FormatNumber(mHealthInterpolator.GetValue()), (-115, -20),DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
-        DrawString(mNumHud, FormatNumber(mManaInterpolator.GetValue()), (90, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
-        DrawString(mNumHud, FormatNumber(mStaminaInterpolator.GetValue()), (110, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        // should make these optional with a cvar or somehting
+		//DrawString(mNumHud, FormatNumber(mHealthInterpolator.GetValue()), (-115, -20),DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        //DrawString(mNumHud, FormatNumber(mManaInterpolator.GetValue()), (90, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        //DrawString(mNumHud, FormatNumber(mStaminaInterpolator.GetValue()), (110, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
 
 
+        let drawflags = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
+        let drawflags_int = drawflags;
         let wep = Weapon(CPlayer.ReadyWeapon);
 		if (wep)
 		{
             if(wep.gettag() == "Mace of Attrition")
             {
-                let drawflags = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
-                let drawflags_int = drawflags;
-
 
                 if(CPLAYER.mo.findinventory("mana2").amount < 5)
                 {
@@ -136,10 +135,10 @@ class HexenRPGHud : BaseStatusBar
                 }
                 // Draw ability icons
                 DrawImage("PENCA0", (-72.8,-35),drawflags);
-                DrawString(smallfont,keys[0],(-72.8,-35),drawflags_int);
+
 
                 DrawImage("SHOVA0", (-35.25,-35),drawflags2);
-                DrawString(smallfont,keys[1],(-35.25,-35),drawflags_int);
+
 
                 if(CPLAYER.mo.findinventory("FixationAura"))
                 {
@@ -149,45 +148,16 @@ class HexenRPGHud : BaseStatusBar
                 {
                     DrawImage("PTRIA0", (1.95,-35),drawflags3);
                 }
-                DrawString(smallfont,keys[2],(1.95,-35),drawflags_int);
-                DrawImage("PAURA0", (39,-35),drawflags);
-                DrawString(smallfont,keys[3],(39,-35),drawflags_int);
+
+                DrawImage("PAURA0", (39,-35),drawflags_int);
+
             }
         }
-
-
-
-
-		//DrawString(mBigFont, FormatNumber(GetArmorSavePercent() / 5, 2), (41, -41), DI_TEXT_ALIGN_RIGHT);
-
-
-
-
-		/*if (!isInventoryBarVisible() && !Level.NoInventoryBar && CPlayer.mo.InvSel != null)
-		{
-			// This code was changed to always fit the item into the box, regardless of alignment or sprite size.
-			// Heretic's ARTIBOX is 30x30 pixels.
-			DrawImage("ARTIBOX", (-66, -1), 0, HX_SHADOW);
-			DrawInventoryIcon(CPlayer.mo.InvSel, (-66, -15), DI_ARTIFLASH|DI_ITEM_CENTER|DI_DIMDEPLETED, boxsize:(28, 28));
-			if (CPlayer.mo.InvSel.Amount > 1)
-			{
-				DrawString(mIndexFont, FormatNumber(CPlayer.mo.InvSel.Amount, 3), (-52, -2 - mIndexFont.mFont.GetHeight()), DI_TEXT_ALIGN_RIGHT);
-			}
-		}
-
-		Ammo ammo1, ammo2;
-		[ammo1, ammo2] = GetCurrentAmmo();
-		if ((ammo1 is "Mana1") || (ammo2 is "Mana1")) DrawImage("MANABRT1", (-17, -30), DI_ITEM_OFFSETS);
-		else DrawImage("MANADIM1", (-17, -30), DI_ITEM_OFFSETS);
-		if ((ammo1 is "Mana2") || (ammo2 is "Mana2")) DrawImage("MANABRT2", (-17, -15), DI_ITEM_OFFSETS);
-		else DrawImage("MANADIM2", (-17, -15), DI_ITEM_OFFSETS);
-		DrawString(mHUDFont, FormatNumber(GetAmount("Mana1"), 3), (-21, -30), DI_TEXT_ALIGN_RIGHT);
-		DrawString(mHUDFont, FormatNumber(GetAmount("Mana2"), 3), (-21, -15), DI_TEXT_ALIGN_RIGHT);
-
-		if (isInventoryBarVisible())
-		{
-			DrawInventoryBar(diparms, (0, 0), 7, DI_SCREEN_CENTER_BOTTOM, HX_SHADOW);
-		}*/
+        // Draw ability bindings
+        DrawString(smallfont,keys[0],(-72.8,-35),drawflags_int);
+        DrawString(smallfont,keys[1],(-35.25,-35),drawflags_int);
+        DrawString(smallfont,keys[2],(1.95,-35),drawflags_int);
+        DrawString(smallfont,keys[3],(39,-35),drawflags_int);
 	}
 
 

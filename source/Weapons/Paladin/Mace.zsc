@@ -8,7 +8,7 @@ class PaladinMace : WeaponBase //CWeapMace
 		Weapon.YAdjust -8;
 		+BLOODSPLATTER
         +Weapon.noalert
-        WeaponBase.MainAttackCost 0,3; // multiples of this are used for different combo costs
+        WeaponBase.MainAttackCost 0,4; // multiples of this are used for different combo costs
         weaponbase.ChargeAttackCost 0,30;
         weaponbase.SecondaryAttackCost 0,12;
         weaponbase.SpecialAttackCost 80,0;
@@ -67,16 +67,20 @@ class PaladinMace : WeaponBase //CWeapMace
         CMCE B 2
         {
             paladin(self).StaminaRegeneration = false;
-            if(invoker.User_macedmg < 28)
+            if(invoker.User_macedmg < 40)
             {
                 invoker.User_macedmg+=2;
-                if(countinv("mana2") > 0) takeinventory("mana2",1);
+                if(countinv("mana2") > 0) takeinventory("mana2",2);
             }
 
             A_CheckResource(1,"mana2",null,"MaceContinue",-1);
         }
         tnt1 a 0 a_refire("MaceHold");
-        tnt1 a 0 { paladin(self).StaminaRegeneration = true; }
+        tnt1 a 0
+        {
+            if(invoker.User_macedmg >=40)
+                invoker.User_macedmg *=2;
+        }
     //swing mace down (combo 1)
     MaceContinue:
         CMCE B 2 Offset (60, 20);
