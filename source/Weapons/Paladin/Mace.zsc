@@ -8,9 +8,9 @@ class PaladinMace : WeaponBase //CWeapMace
 		Weapon.YAdjust -8;
 		+BLOODSPLATTER
         +Weapon.noalert
-        WeaponBase.MainAttackCost 0,5; // multiples of this are used for different combo costs
+        WeaponBase.MainAttackCost 0,3; // multiples of this are used for different combo costs
         weaponbase.ChargeAttackCost 0,30;
-        weaponbase.SecondaryAttackCost 0,10;
+        weaponbase.SecondaryAttackCost 0,12;
         weaponbase.SpecialAttackCost 80,0;
         weaponbase.SupportSkillCost 0,0;
 		Tag "Mace of Attrition";
@@ -34,11 +34,13 @@ class PaladinMace : WeaponBase //CWeapMace
         TNT1 a 0
         {
             invoker.User_macedmg = 0;
+            paladin(self).StaminaRegeneration = true;
         }
     RealReady:
 		CMCE A 1 A_WeaponReady(WRF_allowReload|WRF_ALLOWZOOM);
 		Loop;
     Hold:
+        //tnt1 a 0 { paladin(self).StaminaRegeneration = true; }
         CMCE A 1 A_WeaponReady(WRF_NOFIRE|WRF_allowReload|WRF_ALLOWZOOM);
         CMCE A 0 A_Refire("Hold");
         goto ready;
@@ -65,9 +67,9 @@ class PaladinMace : WeaponBase //CWeapMace
         CMCE B 2
         {
             paladin(self).StaminaRegeneration = false;
-            if(invoker.User_macedmg < 20)
+            if(invoker.User_macedmg < 28)
             {
-                invoker.User_macedmg+=1;
+                invoker.User_macedmg+=2;
                 if(countinv("mana2") > 0) takeinventory("mana2",1);
             }
 
@@ -484,13 +486,11 @@ class PetrifiedPuff : Actor
         spawn:
         PETR AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 light("WraithSprite") BRIGHT
         {
-
+            if(a_checkPetrifyDeath()) return resolvestate("decay");
             A_Warp(AAPTR_TRACER, 2, 0, 32, 0, WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE,null,0);
             if ( !tracer ) return ResolveState(null);
-           // tracer.bDORMANT = true;
             tracer.a_settranslation("petrify");
             tracer.BNOBLOOD = true;
-            tracer.bBuddha = true;
             tracer.bNOPAIN = true;
              for ( int i=0; i<8; i++ ) tracer.A_StopSound(i);
             if ( tracer.FindState("Pain") )
@@ -503,12 +503,9 @@ class PetrifiedPuff : Actor
         }
         PETR AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 light("WraithSprite") BRIGHT
         {
-
+            if(a_checkPetrifyDeath()) return resolvestate("decay");
             A_Warp(AAPTR_TRACER, 2, 0, 32, 0, WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE,null,0);
             if ( !tracer ) return ResolveState(null);
-           // tracer.bDORMANT = true;
-
-            //tracer.a_pain();
             for ( int i=0; i<8; i++ ) tracer.A_StopSound(i);
             if ( tracer.FindState("Pain") )
 				tracer.SetStateLabel("Pain");
@@ -519,6 +516,7 @@ class PetrifiedPuff : Actor
 
         PETR AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 light("WraithSprite") BRIGHT
         {
+            if(a_checkPetrifyDeath()) return resolvestate("decay");
             if ( !tracer ) return ResolveState(null);
             A_Warp(AAPTR_TRACER, 2, 0, 32, 0, WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE,null,0);
             return ResolveState(null);
@@ -526,24 +524,15 @@ class PetrifiedPuff : Actor
         }
         tnt1 a 0
         {
+            if(a_checkPetrifyDeath()) return resolvestate("decay");
             if ( !tracer ) return ResolveState(null);
-            tracer.bBuddha = false;
             tracer.BNOBLOOD = false;
             tracer.bNOPAIN = true;
             tracer.a_SetTics(1);
             tracer.a_settranslation("normal");
-
-            int gibscount = random(16,24);
-            a_startsound("rocksmash");
             tracer.a_pain();
             a_damagetracer(10);
-            for(int i = 0;i<gibscount;i++)
-            {
-                Actor gibs = Spawn("PetrifyChunk",tracer.pos);
-                gibs.vel = (frandom(-3,3), frandom(-3,3), frandom(3,6));
-            }
-
-
+            a_petrifychunks();
             return ResolveState(null);
         }
         PETR AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 light("WraithSprite") BRIGHT
@@ -560,6 +549,31 @@ class PetrifiedPuff : Actor
         Crash:
         tnt1 a 0;
         stop;
+    }
+    action bool a_checkPetrifyDeath()
+    {
+        if(tracer.health < 1)
+        {
+            tracer.a_settranslation("normal");
+            if(tracer.findstate("death"))
+            {
+                tracer.a_SetTics(1);
+                tracer.setstatelabel("death");
+            }
+            a_petrifychunks();
+            return true;
+        }
+        return false;
+    }
+    action void a_petrifyChunks()
+    {
+        a_startsound("rocksmash");
+        int gibscount = random(16,24);
+        for(int i = 0;i<gibscount;i++)
+        {
+            Actor gibs = Spawn("PetrifyChunk",tracer.pos);
+            gibs.vel = (frandom(-3,3), frandom(-3,3), frandom(3,6));
+        }
     }
 }
 

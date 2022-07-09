@@ -13,7 +13,7 @@ class PaladinStaff : weaponbase
        // +WEAPON.AMMO_OPTIONAL;
         //+WEAPON.ALT_AMMO_OPTIONAL;
         +Weapon.noalert
-        WeaponBase.MainAttackCost 8,0;
+        WeaponBase.MainAttackCost 3,0;
         weaponbase.ChargeAttackCost 0,0;
         weaponbase.SecondaryAttackCost 30,0;
         weaponbase.SpecialAttackCost 80,0;

@@ -14,7 +14,7 @@ version "4.7.1"
 
 
 
-class GetInput : EventHandler
+/*class GetInput : EventHandler
 {
 
     override bool InputProcess (InputEvent e)
@@ -32,19 +32,19 @@ class GetInput : EventHandler
    override void NetworkProcess(ConsoleEvent e)
    {
       if (e.Name == "keypress")
-             //console.printf("%d", e.Args[0]);
+             console.printf("%d", e.Args[0]);
 
-             let player = players [e.Player].mo;
+     //let player = players [e.Player].mo;
              //player.fireweapon(null);
         else if (e.Name == "mousepress")
         {
             switch(e.Args[0])
             {
                 case 256:
-                   // console.printf("pew pew");
+                    console.printf("pew pew");
                     break;
                 case 257:
-                    //console.printf("alt pew pew");
+                    console.printf("alt pew pew");
                     break;
             }
         }
@@ -53,4 +53,4 @@ class GetInput : EventHandler
 
 
 
-}
+}*/

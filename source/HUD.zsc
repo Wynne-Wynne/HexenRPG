@@ -2,7 +2,7 @@ class HexenRPGHud : BaseStatusBar
 {
     HUDFont mHUDFont;
 	HUDFont mIndexFont;
-	HUDFont mBigFont;
+	HUDFont mNumHud;
 	InventoryBarState diparms;
 	InventoryBarState diparms_sbar;
     DynamicValueInterpolator mHealthInterpolator, mManaInterpolator, mStaminaInterpolator;
@@ -17,10 +17,13 @@ class HexenRPGHud : BaseStatusBar
 		mHUDFont = HUDFont.Create(fnt, fnt.GetCharWidth("0") + 1, Mono_CellLeft, 1, 1);
 		fnt = "INDEXFONT_RAVEN";
 		mIndexFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), Mono_CellLeft);
-		fnt = "BIGFONT";
-		mBigFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), Mono_CellLeft, 2, 2);
+
+        fnt = "indexfont";
+		mNumHud = HUDFont.Create(fnt, fnt.GetCharWidth("0"), Mono_CellLeft, 0, 0);
+
 		diparms = InventoryBarState.Create(mIndexFont);
 		diparms_sbar = InventoryBarState.CreateNoBox(mIndexFont, boxsize:(31, 31), arrowoffs:(0,-10));
+
 		mHealthInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
         mManaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
         mStaminaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
@@ -78,53 +81,62 @@ class HexenRPGHud : BaseStatusBar
 
         DrawImage("HBAR", (-176, -65), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
-        //DrawBar("MANAVL2D", "", amt2, maxamt2, (102, 164), 1, SHADER_VERT, DI_ITEM_OFFSETS);
-        //drawbar(
-
-		DrawImage("PTN1A0", (60, -3));
-		DrawString(mBigFont, FormatNumber(mHealthInterpolator.GetValue()), (41, -21), DI_TEXT_ALIGN_RIGHT);
-
-        static const int iconoffsets[] = {
-            320-(56+5),
-            320-(28+2),
-            320+1,
-            320+(28+3)
-        };
-
+		// hud numbers
+		DrawString(mNumHud, FormatNumber(mHealthInterpolator.GetValue()), (-115, -20),DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        DrawString(mNumHud, FormatNumber(mManaInterpolator.GetValue()), (90, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        DrawString(mNumHud, FormatNumber(mStaminaInterpolator.GetValue()), (110, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
         int key1, key2;
         [key1, key2] = Bindings.GetKeysForCommand("+attack");
-        //console.printf("%s",Bindings.namekeys(key1,key2));
+        console.printf("%s",Bindings.namekeys(key1,key2));
 
         let wep = Weapon(CPlayer.ReadyWeapon);
 		if (wep)
 		{
             if(wep.gettag() == "Mace of Attrition")
             {
-                let drawflags = DI_ITEM_OFFSETS;
-                if(CPLAYER.mo.findinventory("mana2").amount < 6)
+                let drawflags = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
+
+
+                if(CPLAYER.mo.findinventory("mana2").amount < 5)
                 {
                     drawflags = drawflags|DI_DIM;
                 }
-                let drawflags2 = DI_ITEM_OFFSETS;
-                if(CPLAYER.mo.findinventory("mana1").amount < 40)
+                let drawflags2 = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
+                if(CPLAYER.mo.findinventory("mana2").amount < 13)
                 {
                     drawflags2 = drawflags|DI_DIM;
                 }
-                //DrawImage("PENCA0", (iconoffsets[0],-34),drawflags,1.0,(-1,-1),(0.5,0.5));
-                DrawImage("PENCA0", (iconoffsets[0],-35),drawflags);
-                DrawImage("PENCA0", (iconoffsets[1],-35),drawflags2);
-                DrawImage("PENCA0", (iconoffsets[2],-35),drawflags);
-                DrawImage("PENCA0", (iconoffsets[3],-35),drawflags);
+                let drawflags3 = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
+                if(CPLAYER.mo.findinventory("mana1").amount < 40)
+                {
+                    drawflags3 = drawflags|DI_DIM;
+                }
+
+                DrawImage("PENCA0", (-72.8,-35),drawflags);
+                DrawImage("SHOVA0", (-35.25,-35),drawflags2);
+
+                if(CPLAYER.mo.findinventory("FixationAura"))
+                {
+                    DrawImage("PTRAA0", (1.95,-35),drawflags3);
+                }
+                else
+                {
+                    DrawImage("PTRIA0", (1.95,-35),drawflags3);
+                }
+                DrawImage("PAURA0", (39,-35),drawflags);
             }
         }
+
+
+
 
 		//DrawString(mBigFont, FormatNumber(GetArmorSavePercent() / 5, 2), (41, -41), DI_TEXT_ALIGN_RIGHT);
 
 
 
 
-		if (!isInventoryBarVisible() && !Level.NoInventoryBar && CPlayer.mo.InvSel != null)
+		/*if (!isInventoryBarVisible() && !Level.NoInventoryBar && CPlayer.mo.InvSel != null)
 		{
 			// This code was changed to always fit the item into the box, regardless of alignment or sprite size.
 			// Heretic's ARTIBOX is 30x30 pixels.
@@ -148,7 +160,7 @@ class HexenRPGHud : BaseStatusBar
 		if (isInventoryBarVisible())
 		{
 			DrawInventoryBar(diparms, (0, 0), 7, DI_SCREEN_CENTER_BOTTOM, HX_SHADOW);
-		}
+		}*/
 	}
 
 

@@ -61,7 +61,7 @@ class Paladin : clericplayer
 
     void ManaRegen()
     {
-        let regenamount = (countinv("putrefactionaura") > 0) ? 2:1;
+        let regenamount = (countinv("putrefactionaura") > 0) ? 4:2;
         //mana and stamina is 200 base for cleric
         if(countinv("Mana1") >= 200)
             setinventory("mana1",200);

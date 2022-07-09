@@ -1,4 +1,4 @@
 Gameinfo{
     PlayerClasses="Paladin"
-    AddEventHandlers = "GetInput"
+
     StatusBarClass = "HexenRPGHud"
