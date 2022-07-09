@@ -118,7 +118,7 @@ class HexenRPGHud : BaseStatusBar
 		{
             if(wep.gettag() == "Mace of Attrition")
             {
-
+                //flags to dim icon if there is insufficient mana to use them
                 if(CPLAYER.mo.findinventory("mana2").amount < 5)
                 {
                     drawflags = drawflags|DI_DIM;
@@ -135,11 +135,7 @@ class HexenRPGHud : BaseStatusBar
                 }
                 // Draw ability icons
                 DrawImage("PENCA0", (-72.8,-35),drawflags);
-
-
                 DrawImage("SHOVA0", (-35.25,-35),drawflags2);
-
-
                 if(CPLAYER.mo.findinventory("FixationAura"))
                 {
                     DrawImage("PTRAA0", (1.95,-35),drawflags3);
@@ -148,7 +144,6 @@ class HexenRPGHud : BaseStatusBar
                 {
                     DrawImage("PTRIA0", (1.95,-35),drawflags3);
                 }
-
                 DrawImage("PAURA0", (39,-35),drawflags_int);
 
             }
@@ -158,8 +153,93 @@ class HexenRPGHud : BaseStatusBar
         DrawString(smallfont,keys[1],(-35.25,-35),drawflags_int);
         DrawString(smallfont,keys[2],(1.95,-35),drawflags_int);
         DrawString(smallfont,keys[3],(39,-35),drawflags_int);
-	}
 
+
+        drawRadialMask(mManaInterpolator.getvalue()/2 ,0,0);
+	}
+    void drawRadialMask(float percentage, float xpos, float ypos)
+    {
+        let angle = percentage * 3.6;
+        let tex = texman.checkfortexture("PAURA0");
+        if(angle > 0)
+        {
+            let tr = calcTriangle(angle>45?45:angle, false);
+            Screen.DrawShape(tex, false,tr);
+
+
+        }
+        if(angle > 45)
+        {
+           let tr = calcTriangle(angle>90?90:angle, true);
+           Screen.DrawShape(tex, false,tr);
+        }
+        if(angle > 90)
+        {
+           let tr = calcTriangle(angle>135?135:angle, false);
+           Screen.DrawShape(tex, false,tr);
+        }
+        if(angle > 135)
+        {
+           let tr = calcTriangle(angle>180?180:angle, true);
+           Screen.DrawShape(tex, false,tr);
+        }
+        if(angle > 180)
+        {
+           let tr = calcTriangle(angle>225?225:angle, false);
+           Screen.DrawShape(tex, false,tr);
+        }
+        if(angle > 225)
+        {
+           let tr = calcTriangle(angle>270?270:angle, true);
+           Screen.DrawShape(tex, false,tr);
+        }
+        if(angle > 270)
+        {
+           let tr = calcTriangle(angle>315?315:angle, false);
+           Screen.DrawShape(tex, false,tr);
+        }
+        if(angle > 315)
+        {
+           let tr = calcTriangle(angle>360?360:angle, true);
+           Screen.DrawShape(tex, false,tr);
+        }
+    }
+
+    Shape2D calcTriangle(float angle, bool flip)
+    {
+        let tr = new("Shape2D");
+        tr.pushvertex((0,0)); //always have one vertex in origin
+        tr.pushvertex((flip?1:0,-1));
+        let rotation = flip?45:0;
+
+        let factor = angle/45;
+        for(int i = 1;i<factor; i++)
+        {
+            rotation +=45;
+            angle -=45;
+        }
+
+        if(flip)
+            tr.pushvertex((Angle>45?0:1-tan(Angle) ,-1));
+        else
+            tr.pushvertex((Angle>45?-1:-tan(Angle) ,-1));
+
+
+        tr.pushcoord((0,0));
+        tr.pushcoord((0,1));
+        tr.pushcoord((1,1));
+
+        tr.pushtriangle(0,1,2);
+
+        let tran = new("Shape2DTransform");
+        tran.scale((100,100));
+        tran.rotate(-rotation);
+
+        tran.Translate((Screen.GetWidth()/2, Screen.GetHeight()/2));
+
+        tr.setTransform(tran);
+        return tr;
+    }
 
 }
 
