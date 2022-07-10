@@ -11,7 +11,7 @@ class PaladinMace : WeaponBase //CWeapMace
         WeaponBase.MainAttackCost 0,4; // multiples of this are used for different combo costs
         weaponbase.ChargeAttackCost 0,30;
         weaponbase.SecondaryAttackCost 0,12;
-        weaponbase.SpecialAttackCost 80,0;
+        weaponbase.SpecialAttackCost 40,0;
         weaponbase.SupportSkillCost 0,0;
 		Tag "Mace of Attrition";
 
@@ -258,7 +258,7 @@ class PaladinMace : WeaponBase //CWeapMace
 
                 A_explode(40,360.,XF_NOTMISSILE,true);
                 a_takeresource(WAC_SPECIALATTACK);
-                a_giveinventory("mana1",40); //manually override it here, not normal behavior
+                //a_giveinventory("mana1",40); //manually override it here, not normal behavior
             }
 
         }
@@ -444,7 +444,7 @@ class PowerPetrifyCooldown : Powerup
 {
     default
     {
-        Powerup.duration -16;
+        Powerup.duration -18;
     }
 }
 
