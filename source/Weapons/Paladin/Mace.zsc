@@ -69,6 +69,7 @@ class PaladinMace : WeaponBase //CWeapMace
         tnt1 a 0 a_refire("MaceHold");
     //swing mace down (combo 1)
     MaceContinue:
+        tnt1 a 0 a_giveinventory("Combo1Cooldown",1);
         CMCE B 2 Offset (60, 20);
 		CMCE B 1 Offset (30, 33);
 		CMCE B 2 Offset (8, 45);
@@ -90,6 +91,7 @@ class PaladinMace : WeaponBase //CWeapMace
         CMCE FFFFFFFFFFFFFFFFFF 1 a_checkcombocontinue("fire2","altfire");
     //weapon rise attack (combo 2)
     raisewep:
+        CMCE A 0 a_giveinventory("RaiseCooldown",1);
 		CMCE A 2 Offset (8, 75);
 		CMCE A 1 Offset (8, 65);
 		CMCE A 2 Offset (8, 60);
@@ -132,7 +134,7 @@ class PaladinMace : WeaponBase //CWeapMace
             A_SetAngle(Angle+1, SPF_INTERPOLATE);
         }
         CMCE A 1 Offset (10,160);
-        goto raisewep;
+        goto raisewep+1;
 
     fire3:
         tnt1 a 0 a_takeresource(WAC_MAINATTACK);
@@ -414,6 +416,21 @@ class nullpuff : bulletpuff
     }
 }
 
+class PowerCombo1Cooldown: PowerUp
+{
+    default
+    {
+        Powerup.Duration 19;
+    }
+}
+class PowerRaiseCooldown: PowerUp
+{
+    default
+    {
+        Powerup.Duration 9;
+    }
+}
+
 class PowerShoveCooldown : Powerup
 {
     default
@@ -435,6 +452,24 @@ class powerPetrifyCooldownShort : PowerPetrifyCooldown
     default
     {
         powerup.duration -8;
+    }
+}
+
+class Combo1Cooldown: PowerUpGiver
+{
+    default
+    {
+        Powerup.type "PowerCombo1Cooldown";
+        +inventory.autoactivate;
+    }
+}
+
+class raiseCooldown: PowerUpGiver
+{
+    default
+    {
+        Powerup.type "PowerraiseCooldown";
+        +inventory.autoactivate;
     }
 }
 
