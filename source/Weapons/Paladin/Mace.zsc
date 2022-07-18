@@ -19,7 +19,6 @@ class PaladinMace : WeaponBase //CWeapMace
     override void PostBeginPlay()
     {
         super.PostBeginPlay();
-        User_macedmg = 0;
     }
 
 	States
@@ -33,7 +32,6 @@ class PaladinMace : WeaponBase //CWeapMace
 	Ready:
         TNT1 a 0
         {
-            invoker.User_macedmg = 0;
             paladin(self).StaminaRegeneration = true;
         }
     RealReady:
@@ -60,51 +58,35 @@ class PaladinMace : WeaponBase //CWeapMace
             A_Setpitch(pitch-1, SPF_INTERPOLATE);
             A_setangle(angle-1, SPF_INTERPOLATE);
         }
-    //"charge up" mace
+    //"hold up" mace
         tnt1 a 0 a_refire("MaceHold");
         goto macecontinue;
     MaceHold:
         CMCE B 2
         {
             paladin(self).StaminaRegeneration = false;
-            if(invoker.User_macedmg < 40)
-            {
-                invoker.User_macedmg+=2;
-                if(countinv("mana2") > 0) takeinventory("mana2",2);
-            }
-
-            A_CheckResource(1,"mana2",null,"MaceContinue",-1);
         }
         tnt1 a 0 a_refire("MaceHold");
-        tnt1 a 0
-        {
-            if(invoker.User_macedmg >=40)
-                invoker.User_macedmg *=2;
-        }
     //swing mace down (combo 1)
     MaceContinue:
         CMCE B 2 Offset (60, 20);
 		CMCE B 1 Offset (30, 33);
 		CMCE B 2 Offset (8, 45);
-		CMCE C 1 Offset (8, 45) a_recoil(-8-(invoker.User_maceDMG/10.0));
+		CMCE C 1 Offset (8, 45) a_recoil(-8);
 		CMCE D 1 Offset (8, 45);
 		CMCE E 1 Offset (8, 45);
 		CMCE E 1 Offset (-11, 58)
         {
             A_setpitch(pitch+1,SPF_INTERPOLATE);
             A_setangle(angle+1,SPF_INTERPOLATE);
-            A_MaceAttack(invoker.User_macedmg + 35,invoker.User_macedmg + 60);
+            A_MaceAttack(35, 60);
 
         }
 		CMCE F 1 Offset (8, 45);
 		CMCE F 2 Offset (-8, 74);
 		CMCE F 1 Offset (-20, 96);
 		CMCE F 4 Offset (-33, 160);
-        CMCE F 4
-        {
-            A_settics(invoker.User_macedmg/4.0);
-            invoker.User_macedmg = 0;
-        }
+        CMCE F 2;
         CMCE FFFFFFFFFFFFFFFFFF 1 a_checkcombocontinue("fire2","altfire");
     //weapon rise attack (combo 2)
     raisewep:

@@ -160,18 +160,6 @@ class HexenRPGHud : BaseStatusBar
             if(wep.gettag() == "Mace of Attrition")
             {
 
-                /*
-                int MainAttackManaCost;
-                int MainAttackStaminaCost;
-                int ChargeAttackManaCost;
-                int ChargeAttackStaminaCost;
-                int SecondaryAttackManaCost;
-                int SecondaryAttackStaminaCost;
-                int SpecialAttackManaCost;
-                int SpecialAttackStaminaCost;
-                int SupportSkillManaCost;
-                int SupportSkillStaminaCost;
-                */
                 let w = WeaponBase(wep);
                 DrawAbility("PENCA0", (-72.8,-35), w.MainAttackManaCost , w.MainAttackStaminaCost, BT_ATTACK);
                 DrawAbility("SHOVA0", (-35.25,-35), w.SecondaryAttackManaCost , w.SecondaryAttackStaminaCost, BT_ALTATTACK);
@@ -180,6 +168,10 @@ class HexenRPGHud : BaseStatusBar
                 {
                     DrawAbility("PTRAA0", (1.95,-35), w.SpecialAttackManaCost, w.SpecialAttackStaminaCost, BT_RELOAD);
                     DrawCooldown("powerPetrifyCooldown",(39,-35),(28, -16),(1.95,-35),"powerPetrifyCooldownShort");
+
+                    // Draw border on selected aura
+                    let auralpha = (4+sin(9*gametic))/7;
+                    DrawImage("AAUR", (36.5,-37), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM,auralpha);
                 }
                 else
                 {
