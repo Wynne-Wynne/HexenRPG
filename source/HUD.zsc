@@ -9,6 +9,10 @@ class HexenRPGHud : BaseStatusBar
     DynamicValueInterpolator mHealthInterpolator, mManaInterpolator, mStaminaInterpolator;
     Array<string> keys;
     int glowIndex;
+    Vector2 Ability1Pos;
+    Vector2 Ability2Pos;
+    Vector2 Ability3Pos;
+    Vector2 Ability4Pos;
 
     override void Init()
 	{
@@ -52,6 +56,12 @@ class HexenRPGHud : BaseStatusBar
 
         // used to alternate between ability proc frame
         glowIndex = 0;
+
+        // location of ability icons
+        ability1Pos = (-72.8,-35);
+        ability2Pos = (-35.25,-35);
+        ability3Pos = (1.95,-35);
+        ability4Pos = (39,-35);
 	}
 
 
@@ -134,7 +144,7 @@ class HexenRPGHud : BaseStatusBar
             if(ticsleft < 30 && FlashLocation != (0,0))
             {
                 let alpha = (ticsleft>=3) ? (3/ticsleft) : ticsleft/3;
-                readyFlash(FlashLocation,alpha-0.55);
+                readyFlash(FlashLocation,alpha-0.5);
             }
 
 
@@ -191,6 +201,8 @@ class HexenRPGHud : BaseStatusBar
         DrawString(mNumHud, FormatNumber(mManaInterpolator.GetValue()), (90, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
         DrawString(mNumHud, FormatNumber(mStaminaInterpolator.GetValue()), (110, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
+
+
         let wep = Weapon(CPlayer.ReadyWeapon);
 		if (wep)
 		{
@@ -198,28 +210,31 @@ class HexenRPGHud : BaseStatusBar
             {
 
                 let w = WeaponBase(wep);
-                DrawAbility("PENCA0", (-72.8,-35), w.MainAttackManaCost , w.MainAttackStaminaCost, BT_ATTACK);
+                DrawAbility("PENCA0", ability1Pos, w.MainAttackManaCost , w.MainAttackStaminaCost, BT_ATTACK);
                 DrawProcGlow("PowerProcCooldown",(-74.8,-37));
-                DrawCoolDOwn("PowerCombo1Cooldown", (-112,-35), (-46.75,-16), (-72.8,-35));
-                DrawCoolDOwn("PowerRaiseCooldown", (-112,-35), (-46.75,-16), (-72.8,-35));
+                DrawCoolDOwn("PowerCombo1Cooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
+                DrawCoolDOwn("PowerRaiseCooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
+                DrawCoolDOwn("PowerCombo2Cooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
+                DrawCoolDOwn("PowerLowerCooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
+                DrawCoolDOwn("PowerCombo3Cooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
 
-                DrawAbility("SHOVA0", (-35.25,-35), w.SecondaryAttackManaCost , w.SecondaryAttackStaminaCost, BT_ALTATTACK);
-                DrawCoolDown("PowerShoveCooldown", (-36.5,-35), (-9.2, -16),(-36.5,-35));
+                DrawAbility("SHOVA0", ability2Pos, w.SecondaryAttackManaCost , w.SecondaryAttackStaminaCost, BT_ALTATTACK);
+                DrawCoolDown("PowerShoveCooldown", (-36.5,-52), (-9.2, -16),(-36.5,-35));
                 if(CPLAYER.mo.findinventory("FixationAura"))
                 {
-                    DrawAbility("PTRAA0", (1.95,-35), w.SpecialAttackManaCost, w.SpecialAttackStaminaCost, BT_RELOAD);
-                    DrawCooldown("powerPetrifyCooldown",(38.4,-35),(28, -16),(1.95,-35),"powerPetrifyCooldownShort");
+                    DrawAbility("PTRAA0", ability3Pos, w.SpecialAttackManaCost, w.SpecialAttackStaminaCost, BT_RELOAD);
+                    DrawCooldown("powerPetrifyCooldown",(38.4,-52),(28, -16),(1.95,-35),"powerPetrifyCooldownShort");
 
                     // Draw border on selected aura
                     let auralpha = (4+sin(9*gametic))/7;
-                    DrawImage("AAUR", (36.5,-37), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM,auralpha);
+                    DrawImage("AAUR", (37,-37), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM,auralpha);
                 }
                 else
                 {
-                    DrawAbility("PTRIA0", (1.95,-35), w.SpecialAttackManaCost, w.SpecialAttackStaminaCost, BT_RELOAD);
-                    DrawCooldown("powerPetrifyCooldownshort",(38.8,-35),(28, -16),(1.95,-35),"powerPetrifyCooldown");
+                    DrawAbility("PTRIA0", ability3Pos, w.SpecialAttackManaCost, w.SpecialAttackStaminaCost, BT_RELOAD);
+                    DrawCooldown("powerPetrifyCooldownshort",(38.8,-52),(28, -16),(1.95,-35),"powerPetrifyCooldown");
                 }
-                DrawAbility("PAURA0",(39,-35),w.SupportSkillManaCost,w.SupportSkillStaminaCost, BT_ZOOM);
+                DrawAbility("PAURA0",ability4Pos,w.SupportSkillManaCost,w.SupportSkillStaminaCost, BT_ZOOM);
             }
         }
         // Draw ability keybinds
@@ -278,6 +293,13 @@ class HexenRPGHud : BaseStatusBar
 
     Shape2D calcTriangle(float angle, bool flip, Vector2 pos)
     {
+        // base scale for 1080p resolution
+        let basescale = 14.1666667;
+        let hudscale = gethudscale();
+        let vscale = basescale*hudscale.y; //size of mask
+
+        let posScale = vscale / (2.4 * basescale); //scaling of position
+
         let tr = new("Shape2D");
         tr.pushvertex((0,0)); //always have one vertex in origin
         tr.pushvertex((flip?1:0,-1));
@@ -302,9 +324,10 @@ class HexenRPGHud : BaseStatusBar
         tr.pushtriangle(0,1,2);
 
         let tran = new("Shape2DTransform");
-        tran.scale((34,34));
+        tran.scale((vscale,vscale));
         tran.rotate(-rotation);
-        tran.Translate(( (Screen.getWidth()/2)+pos.X, Screen.getHeight()+pos.Y-16));
+
+        tran.Translate(((Screen.getWidth()/2)+(pos.X * posscale), Screen.getHeight()+(pos.Y * posscale) ) );
 
         tr.setTransform(tran);
         return tr;

@@ -108,6 +108,7 @@ class PaladinMace : WeaponBase //CWeapMace
 		Goto Ready;
 
     fire2:
+        tnt1 a 0 a_giveinventory("Combo2Cooldown",1);
         tnt1 a 0 a_takeinventory("powerprocCooldown",1);
         tnt1 a 0 a_takeresource(WAC_MAINATTACK);
         CMCE F 2 Offset (-33,160);
@@ -127,6 +128,7 @@ class PaladinMace : WeaponBase //CWeapMace
         tnt1 a 0 a_giveinventory("ProcCooldown",1);
         CMCE CCCCCCCCCCCCCCC 1 a_checkcombocontinue("fire3","altfire");
     lowerwep:
+        tnt1 a 0 a_giveinventory("LowerCooldown",1);
         tnt1 a 0 a_takeinventory("powerprocCooldown",1);
         CMCE C 2 Offset (55,130);
         CMCE C 2 Offset (50,140);
@@ -142,6 +144,7 @@ class PaladinMace : WeaponBase //CWeapMace
         goto raisewep+1;
 
     fire3:
+        tnt1 a 0 a_giveinventory("Combo3Cooldown",1);
         tnt1 a 0 a_takeinventory("powerprocCooldown",1);
         tnt1 a 0 a_takeresource(WAC_MAINATTACK);
         CMCE C 1 Offset (30, 130);
@@ -422,6 +425,7 @@ class nullpuff : bulletpuff
         stop;
     }
 }
+// glowy ability icon go brrrr
 class PowerProcCooldown: PowerUp
 {
     default
@@ -436,7 +440,28 @@ class PowerCombo1Cooldown: PowerUp
         Powerup.Duration 19;
     }
 }
+class PowerCombo2Cooldown: PowerUp
+{
+    default
+    {
+        Powerup.Duration 16;
+    }
+}
+class PowerCombo3Cooldown: PowerUp
+{
+    default
+    {
+        Powerup.Duration 39;
+    }
+}
 class PowerRaiseCooldown: PowerUp
+{
+    default
+    {
+        Powerup.Duration 9;
+    }
+}
+class PowerLowerCooldown: PowerUp
 {
     default
     {
@@ -485,12 +510,37 @@ class Combo1Cooldown: PowerUpGiver
         +inventory.autoactivate;
     }
 }
+class Combo2Cooldown: PowerUpGiver
+{
+    default
+    {
+        Powerup.type "PowerCombo2Cooldown";
+        +inventory.autoactivate;
+    }
+}
+class Combo3Cooldown: PowerUpGiver
+{
+    default
+    {
+        Powerup.type "PowerCombo3Cooldown";
+        +inventory.autoactivate;
+    }
+}
 
 class raiseCooldown: PowerUpGiver
 {
     default
     {
         Powerup.type "PowerraiseCooldown";
+        +inventory.autoactivate;
+    }
+}
+
+class lowerCooldown: PowerUpGiver
+{
+    default
+    {
+        Powerup.type "PowerlowerCooldown";
         +inventory.autoactivate;
     }
 }
