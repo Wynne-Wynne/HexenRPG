@@ -88,10 +88,12 @@ class PaladinMace : WeaponBase //CWeapMace
 		CMCE F 1 Offset (-20, 96);
 		CMCE F 4 Offset (-33, 160);
         CMCE F 2;
+        tnt1 a 0 a_giveinventory("ProcCooldown",1);
         CMCE FFFFFFFFFFFFFFFFFF 1 a_checkcombocontinue("fire2","altfire");
     //weapon rise attack (combo 2)
     raisewep:
         CMCE A 0 a_giveinventory("RaiseCooldown",1);
+        tnt1 a 0 a_takeinventory("powerprocCooldown",1);
 		CMCE A 2 Offset (8, 75);
 		CMCE A 1 Offset (8, 65);
 		CMCE A 2 Offset (8, 60);
@@ -106,6 +108,7 @@ class PaladinMace : WeaponBase //CWeapMace
 		Goto Ready;
 
     fire2:
+        tnt1 a 0 a_takeinventory("powerprocCooldown",1);
         tnt1 a 0 a_takeresource(WAC_MAINATTACK);
         CMCE F 2 Offset (-33,160);
         CMCE F 1 Offset (-20,160);
@@ -121,8 +124,10 @@ class PaladinMace : WeaponBase //CWeapMace
         CMCE C 2 Offset (55,110);
         CMCE C 2 Offset (55,120);
         CMCE C 5 Offset (60,130);
+        tnt1 a 0 a_giveinventory("ProcCooldown",1);
         CMCE CCCCCCCCCCCCCCC 1 a_checkcombocontinue("fire3","altfire");
     lowerwep:
+        tnt1 a 0 a_takeinventory("powerprocCooldown",1);
         CMCE C 2 Offset (55,130);
         CMCE C 2 Offset (50,140);
         CMCE C 1 Offset (40,150);
@@ -137,6 +142,7 @@ class PaladinMace : WeaponBase //CWeapMace
         goto raisewep+1;
 
     fire3:
+        tnt1 a 0 a_takeinventory("powerprocCooldown",1);
         tnt1 a 0 a_takeresource(WAC_MAINATTACK);
         CMCE C 1 Offset (30, 130);
         CMCE C 1 Offset (50, 115);
@@ -167,6 +173,7 @@ class PaladinMace : WeaponBase //CWeapMace
         goto ready;
     //shove
     altfire:
+        tnt1 a 0 a_takeinventory("powerprocCooldown",1);
         tnt1 a 0 a_checkattackresource(WAC_SECONDARYATTACK,null,"hold");
         tnt1 a 0 a_jumpifinventory("PowershoveCooldown",1,"hold");
         tnt1 a 0 A_weaponready(WRF_NoSwitch|WRF_NOFIRE|WRF_allowReload|WRF_ALLOWZOOM);
@@ -415,7 +422,13 @@ class nullpuff : bulletpuff
         stop;
     }
 }
-
+class PowerProcCooldown: PowerUp
+{
+    default
+    {
+        Powerup.Duration -30;
+    }
+}
 class PowerCombo1Cooldown: PowerUp
 {
     default
@@ -452,6 +465,15 @@ class powerPetrifyCooldownShort : PowerPetrifyCooldown
     default
     {
         powerup.duration -8;
+    }
+}
+
+class ProcCooldown: PowerUpGiver
+{
+    default
+    {
+        Powerup.type "PowerProcCooldown";
+        +inventory.autoactivate;
     }
 }
 

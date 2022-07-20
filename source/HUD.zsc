@@ -8,6 +8,7 @@ class HexenRPGHud : BaseStatusBar
 	InventoryBarState diparms_sbar;
     DynamicValueInterpolator mHealthInterpolator, mManaInterpolator, mStaminaInterpolator;
     Array<string> keys;
+    int glowIndex;
 
     override void Init()
 	{
@@ -49,7 +50,8 @@ class HexenRPGHud : BaseStatusBar
                 keys[i] = keys[i].left(1)..keys[i].mid(keys[i].Length()-1,1);
         }
 
-
+        // used to alternate between ability proc frame
+        glowIndex = 0;
 	}
 
 
@@ -144,6 +146,41 @@ class HexenRPGHud : BaseStatusBar
         DrawImage("flash", Location, DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM,flashAlpha);
     }
 
+    void DrawprocGlow(string glowpowerup, Vector2 Location)
+    {
+        if(CPLAYER.mo.findinventory(glowpowerup))
+        {
+            if(glowIndex >= 14) glowIndex = 0;
+            let frame = "";
+            switch(glowIndex)
+            {
+                case 0:
+                Case 1:
+                case 2:
+                case 3:
+                case 4:
+                    frame = "glow1";
+                    break;
+
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                    frame = "glow2";
+                    break;
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                    frame = "glow3";
+                    break;
+            }
+            DrawImage(frame,Location,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+            glowIndex++;
+        }
+    }
+
 	protected void DrawFullScreenStuff ()
 	{
         DrawOrbs();
@@ -162,6 +199,7 @@ class HexenRPGHud : BaseStatusBar
 
                 let w = WeaponBase(wep);
                 DrawAbility("PENCA0", (-72.8,-35), w.MainAttackManaCost , w.MainAttackStaminaCost, BT_ATTACK);
+                DrawProcGlow("PowerProcCooldown",(-74.8,-37));
                 DrawCoolDOwn("PowerCombo1Cooldown", (-112,-35), (-46.75,-16), (-72.8,-35));
                 DrawCoolDOwn("PowerRaiseCooldown", (-112,-35), (-46.75,-16), (-72.8,-35));
 
