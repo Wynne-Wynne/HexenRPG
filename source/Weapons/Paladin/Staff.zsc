@@ -364,7 +364,6 @@ class corruption : actor
 
     default
     {
-        scale 0.4;
         +NOBLOCKMAP;
 		+NOGRAVITY;
         +FORCEXYBILLBOARD;
@@ -384,8 +383,8 @@ class corruption : actor
             if(gametic%35==0)
             {
                 a_spawnitemex("corruptsmoke");
-                a_damagetracer(poisondamage-(random(-poisondamage,poisondamage)/3),"poisoncloud",DMSS_FOILINVUL  ,null,"None",AAPTR_TARGET);
-                poisondamage *= 2;
+                a_damagetracer(poisondamage,"poisoncloud",DMSS_FOILINVUL  ,null,"None",AAPTR_TARGET);
+                poisondamage *= 1.5;
             }
         }
     }
