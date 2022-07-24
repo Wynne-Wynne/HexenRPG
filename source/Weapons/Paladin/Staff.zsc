@@ -41,7 +41,7 @@ class PaladinStaff : weaponbase
 		CSSF C 4;
 		CSSF B 3 A_CStaffInitBlink;
     actualready:
-		CSSF AAAAAAA 1 A_WeaponReady(WRF_ALLOWZOOM);
+		CSSF AAAAAAA 1 A_WeaponReady(WRF_ALLOWZOOM|WRF_ALLOWRELOAD);
 		CSSF A 1 A_CStaffCheckBlink;
 		Goto Ready + 2;
 	Fire:
@@ -93,7 +93,31 @@ class PaladinStaff : weaponbase
             }
         }
         goto ready+2;
+    Reload:
+        CSCB ABC 1;
+        CSCB D 2;
+        CSCB E 2 BRIGHT
+        {
+             if(countinv("putrefactionaura") > 0)
+             {
+                A_setblend("olivedrab3",.8,18);
+                a_startsound("corrupt");
+            }
+            else
+            {
+                a_startsound("corrupt2");
+            }
 
+        }
+        tnt1 a 0 a_CStaffCorrupt(countinv("putrefactionaura") > 0);
+        CSCB FFF 1 BRIGHT
+        {
+            a_light(-5);
+        }
+        CSCB EE 3 BRIGHT a_light0;
+        CSCB D 3;
+        CSCB GH 3;
+        goto ready+2;
     OOMhold:
         CSSF A 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH);
         tnt1 a 0
@@ -210,6 +234,28 @@ class PaladinStaff : weaponbase
         Actor mo = SpawnPlayerMissile ("SerpentStaffBiteMissile");
     }
 
+    action void A_CStaffCorrupt(bool empowered)
+    {
+        if (player == null)
+		{
+			return;
+		}
+        Weapon weapon = player.ReadyWeapon;
+		if (weapon == null)
+		{
+			//if (!weapon.DepleteAmmo (weapon.bAltFire))
+				return;
+		}
+        if(empowered)
+        {
+            Actor mo = SpawnPlayerMissile ("CorruptionBlastShot");
+        }
+        else
+        {
+            Actor mo = SpawnPlayerMissile ("CorruptionBlastShot2");
+        }
+    }
+
 	//============================================================================
 	//
 	// A_CStaffInitBlink
@@ -258,6 +304,117 @@ class BiteCooldown : Powerupgiver
     {
         Powerup.Type "PowerBiteCooldown";
         +inventory.AUTOACTIVATE
+    }
+}
+
+//empowered
+class CorruptionBlastShot : FastProjectile
+{
+    default
+    {
+        radius 8;
+        height 6;
+        speed 60;
+        damageFunction 0;
+        -ACTIVATEIMPACT;
+        +forcepain;
+        +hittracer;
+        +puffonactors;
+        +bloodlessimpact;
+    }
+    states
+    {
+        spawn:
+            tnt1 a 1;
+            loop;
+        XDEATH:
+            tnt1 a 0
+            {
+                a_explode(60,96,0);
+                a_spawnitemex("corruption",0,0,0,0,0,0,0,SXF_TRANSFERPOINTERS);
+                a_startsound("corrupthit");
+            }
+        Crash:
+        Death:
+            tnt1 a 1;
+            stop;
+    }
+
+}
+
+class corruptsmoke : corruptsmoke2
+{
+    default
+    {
+        RenderStyle "add";
+        scale 1.5;
+        Translation "0:255=%[0,0,0]:[0,0.6,0]";
+    }
+}
+
+class corruption : actor
+{
+    int poisonDamage;
+
+    Override void PostBeginPlay()
+    {
+        Super.postbeginplay();
+        poisonDamage = 5;
+    }
+
+    default
+    {
+        scale 0.4;
+        +NOBLOCKMAP;
+		+NOGRAVITY;
+        +FORCEXYBILLBOARD;
+        +PUFFONACTORS;
+        +PUFFGETSOWNER;
+        +HITTRACER;
+        +forcepain;
+    }
+
+    override void tick()
+    {
+        Super.Tick();
+        if (!tracer || tracer.health < 1) return;
+        else
+        {
+            A_Warp(AAPTR_TRACER, 2, 0, 32, 0, WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE,null,0);
+            if(gametic%35==0)
+            {
+                a_spawnitemex("corruptsmoke");
+                a_damagetracer(poisondamage-(random(-poisondamage,poisondamage)/3),"poisoncloud",DMSS_FOILINVUL  ,null,"None",AAPTR_TARGET);
+                poisondamage *= 2;
+            }
+        }
+    }
+
+    states
+    {
+        spawn:
+            tnt1 a 280;
+            stop;
+    }
+}
+
+class corruptsmoke2 : cstaffpuff {}
+
+class CorruptionBlastShot2 : CorruptionBlastShot
+{
+    states
+    {
+        XDEATH:
+        tnt1 a 0
+        {
+            a_explode(40,96,0);
+            a_spawnitemex("cstaffpuff");
+            a_startsound("corrupthit2");
+        }
+        Crash:
+        Death:
+            tnt1 a 1;
+            stop;
     }
 }
 

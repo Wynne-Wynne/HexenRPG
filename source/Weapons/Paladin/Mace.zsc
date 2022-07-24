@@ -235,7 +235,7 @@ class PaladinMace : WeaponBase //CWeapMace
         {
             a_alertmonsters();
             A_explode(60,360.,XF_NOTMISSILE,true);
-            a_light(2);
+            a_light(10);
 
             if(countinv("fixationaura") > 0)
             {

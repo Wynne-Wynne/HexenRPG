@@ -18,5 +18,10 @@ Putrefaction "Sounds/Putrefaction.wav"
 Petr "Sounds/Petr.wav"
 Petr2 "Sounds/Petr2.wav"
 snekcharge "sounds/spitcharge.wav"
+
+corrupt "sounds/corruption_blast.wav"
+corrupt2 "sounds/corruption_blast2.wav"
+corrupthit "sounds/chit.wav"
+corrupthit2 "sounds/chit2.wav"
 $Limit fixation 4
 $Limit putrefaction 4
