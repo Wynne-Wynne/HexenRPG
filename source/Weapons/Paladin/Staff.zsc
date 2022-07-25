@@ -240,19 +240,25 @@ class PaladinStaff : weaponbase
 		{
 			return;
 		}
-        Weapon weapon = player.ReadyWeapon;
-		if (weapon == null)
-		{
-			//if (!weapon.DepleteAmmo (weapon.bAltFire))
-				return;
-		}
-        if(empowered)
+        FtranslatedLineTarget t;
+        let distance = 960;
+        class<Actor> puff = empowered?"Corruption":"corruption2";
+
+        for(int i = 0;i < 16; i++)
         {
-            Actor mo = SpawnPlayerMissile ("CorruptionBlastShot");
-        }
-        else
-        {
-            Actor mo = SpawnPlayerMissile ("CorruptionBlastShot2");
+            for(int j = 1; j >=1; j-=2)
+            {
+
+                double ang = angle + j*i*(45.0/16);
+                double slope = AimLineAttack(ang,distance,t,64.0,alf_check3d);
+                if(t.linetarget != null && t.linetarget.bIsMonster && t.linetarget.findinventory("corruptionitem")==null)
+                {
+                    Lineattack(ang, distance,slope,0,'None',puff,LAF_NOIMPACTDECAL,t);
+                    t.linetarget.giveinventory("CorruptionItem",1);
+                    a_alertmonsters();
+                    return;
+                }
+            }
         }
     }
 
@@ -307,39 +313,25 @@ class BiteCooldown : Powerupgiver
     }
 }
 
-//empowered
-class CorruptionBlastShot : FastProjectile
-{
-    default
-    {
-        radius 8;
-        height 6;
-        speed 60;
-        damageFunction 0;
-        -ACTIVATEIMPACT;
-        +forcepain;
-        +hittracer;
-        +puffonactors;
-        +bloodlessimpact;
-    }
-    states
-    {
-        spawn:
-            tnt1 a 1;
-            loop;
-        XDEATH:
-            tnt1 a 0
-            {
-                a_explode(60,96,0);
-                a_spawnitemex("corruption",0,0,0,0,0,0,0,SXF_TRANSFERPOINTERS);
-                a_startsound("corrupthit");
-            }
-        Crash:
-        Death:
-            tnt1 a 1;
-            stop;
-    }
 
+class corruption2 : corruption
+{
+    override void tick()
+    {
+        actor.Tick();
+        if (!tracer || tracer.health < 1) return;
+        else
+        {
+            A_Warp(AAPTR_TRACER, 2, 0, 32, 0, WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE,null,0);
+            if(gametic%35==0)
+            {
+                a_startsound("corrupthit2");
+                a_spawnitemex("cstaffpuff");
+                a_damagetracer(poisondamage,"poisoncloud",DMSS_FOILINVUL  ,null,"None",AAPTR_TARGET);
+                poisondamage *= poisondamage>40?1.5:1;
+            }
+        }
+    }
 }
 
 class corruptsmoke : corruptsmoke2
@@ -352,14 +344,30 @@ class corruptsmoke : corruptsmoke2
     }
 }
 
+class corruptionitem : inventory
+{
+    default
+    {
+        inventory.maxamount 1;
+    }
+    states
+    {
+        held:
+        tnt1 a 560;
+        stop;
+    }
+}
+
 class corruption : actor
 {
     int poisonDamage;
+    bool firstTic;
 
     Override void PostBeginPlay()
     {
         Super.postbeginplay();
         poisonDamage = 5;
+        firstTic = true;
     }
 
     default
@@ -371,6 +379,7 @@ class corruption : actor
         +PUFFGETSOWNER;
         +HITTRACER;
         +forcepain;
+        +BLOODLESSIMPACT;
     }
 
     override void tick()
@@ -382,10 +391,53 @@ class corruption : actor
             A_Warp(AAPTR_TRACER, 2, 0, 32, 0, WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE,null,0);
             if(gametic%35==0)
             {
+                a_startsound("corrupthit");
                 a_spawnitemex("corruptsmoke");
                 a_damagetracer(poisondamage,"poisoncloud",DMSS_FOILINVUL  ,null,"None",AAPTR_TARGET);
-                poisondamage *= 1.5;
+                poisondamage *= poisondamage>40?1.5:1;
+                if(!firstTic)
+                    spreadCorruption();
+                else
+                    firstTic = false;
             }
+        }
+    }
+
+    void spreadCorruption()
+    {
+        if (!tracer || tracer.health < 1) return;
+        FtranslatedLineTarget t;
+        let distance = 256;
+        class<Actor> puff = "Corruption";
+        int numrays = 160;
+        double ang = 360.0;
+        double vrange = 64.0;
+        let monster_count = 2;
+
+        for(int i = 0;i<numrays;i++)
+        {
+            if(monster_count < 1) return;
+            double an = angle - ang / 2 + ang / numrays * i;
+            tracer.AimLineAttack(an,distance,t,vrange,ALF_CHECK3D);
+            if (t.linetarget != null && t.linetarget.findinventory("corruptionitem")==null && t.linetarget.bISMONSTER && t.linetarget !=tracer)
+            {
+                t.linetarget.giveinventory("corruptionitem",1);
+                actor puff = Spawn(puff,t.linetarget.pos,ALLOW_REPLACE);
+
+                if(puff !=null)
+                {
+                    if ((target.GetSpecies() == t.linetarget.GetSpecies()) ||
+					target == t.linetarget)
+					{
+						puff.Destroy();
+						continue;
+					}
+                    puff.target = target;
+                    puff.tracer = t.linetarget;
+                    monster_count--;
+                }
+            }
+
         }
     }
 
@@ -399,23 +451,6 @@ class corruption : actor
 
 class corruptsmoke2 : cstaffpuff {}
 
-class CorruptionBlastShot2 : CorruptionBlastShot
-{
-    states
-    {
-        XDEATH:
-        tnt1 a 0
-        {
-            a_explode(40,96,0);
-            a_spawnitemex("cstaffpuff");
-            a_startsound("corrupthit2");
-        }
-        Crash:
-        Death:
-            tnt1 a 1;
-            stop;
-    }
-}
 
 class SerpentStaffBiteMissile : FastProjectile
 {
