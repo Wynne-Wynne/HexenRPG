@@ -94,8 +94,11 @@ class PaladinStaff : weaponbase
         }
         goto ready+2;
     Reload:
-        CSCB ABC 1;
-        CSCB D 2;
+        CSCB ABBCCCCCC 1;
+        CSCB D 2
+        {
+            if(countinv("putrefactionaura")>0) A_setblend("olivedrab3",.4,28);
+        }
         CSCB E 2 BRIGHT
         {
              if(countinv("putrefactionaura") > 0)
@@ -328,7 +331,7 @@ class corruption2 : corruption
                 a_startsound("corrupthit2");
                 a_spawnitemex("cstaffpuff");
                 a_damagetracer(poisondamage,"poisoncloud",DMSS_FOILINVUL  ,null,"None",AAPTR_TARGET);
-                poisondamage *= poisondamage>40?1.5:1;
+                poisondamage *= 1.5;
             }
         }
     }
@@ -394,7 +397,7 @@ class corruption : actor
                 a_startsound("corrupthit");
                 a_spawnitemex("corruptsmoke");
                 a_damagetracer(poisondamage,"poisoncloud",DMSS_FOILINVUL  ,null,"None",AAPTR_TARGET);
-                poisondamage *= poisondamage>40?1.5:1;
+                poisondamage *= 1.5;
                 if(!firstTic)
                     spreadCorruption();
                 else

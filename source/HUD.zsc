@@ -203,13 +203,13 @@ class HexenRPGHud : BaseStatusBar
 
 
 
-        let wep = Weapon(CPlayer.ReadyWeapon);
-		if (wep)
+        let wieldedWeapon = Weapon(CPlayer.ReadyWeapon);
+		if (wieldedWeapon)
 		{
-            if(wep.gettag() == "Mace of Attrition")
+            let wep = wieldedWeapon.gettag();
+            let w = WeaponBase(wieldedWeapon);
+            if(wep == "Mace of Attrition")
             {
-
-                let w = WeaponBase(wep);
                 DrawAbility("PENCA0", ability1Pos, w.MainAttackManaCost , w.MainAttackStaminaCost, BT_ATTACK);
                 DrawProcGlow("PowerProcCooldown",(-74.8,-37));
                 DrawCoolDOwn("PowerCombo1Cooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
@@ -236,6 +236,11 @@ class HexenRPGHud : BaseStatusBar
                 }
                 DrawAbility("PAURA0",ability4Pos,w.SupportSkillManaCost,w.SupportSkillStaminaCost, BT_ZOOM);
             }
+            else if(wep == "Serpent Staff")
+            {
+                DrawAbility("SSSBA0", ability1Pos, w.MainAttackManaCost , w.MainAttackStaminaCost, BT_ATTACK);
+            }
+
         }
         // Draw ability keybinds
         let drawflags = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
