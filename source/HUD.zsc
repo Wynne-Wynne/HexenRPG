@@ -6,13 +6,21 @@ class HexenRPGHud : BaseStatusBar
     HUDFont smallfont;
 	InventoryBarState diparms;
 	InventoryBarState diparms_sbar;
-    DynamicValueInterpolator mHealthInterpolator, mManaInterpolator, mStaminaInterpolator;
+    DynamicValueInterpolator mHealthInterpolator, mManaInterpolator;//, mStaminaInterpolator;
     Array<string> keys;
     int glowIndex;
     Vector2 Ability1Pos;
     Vector2 Ability2Pos;
     Vector2 Ability3Pos;
     Vector2 Ability4Pos;
+
+    Enum attackTypes
+    {
+        WAC_BAS,
+        WAC_THR,
+        WAC_SPEC,
+        WAC_ULT,
+    }
 
     override void Init()
 	{
@@ -36,7 +44,7 @@ class HexenRPGHud : BaseStatusBar
 
 		mHealthInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
         mManaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
-        mStaminaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
+        //mStaminaInterpolator = DynamicValueInterpolator.Create(0, 0.25, 1, 8);
 
 
         // key binds
@@ -91,29 +99,30 @@ class HexenRPGHud : BaseStatusBar
 		Super.NewGame();
 		mHealthInterpolator.Reset (0);
         mManaInterpolator.Reset (0);
-        mStaminaInterpolator.Reset (0);
+        //mStaminaInterpolator.Reset (0);
     }
 
     override void Tick()
 	{
 		Super.Tick();
 		mHealthInterpolator.Update(CPlayer.health);
-        Inventory man = CPlayer.mo.FindInventory("Mana1"),
-                 stam = CPlayer.mo.FindInventory("Mana2");
+        Inventory man = CPlayer.mo.FindInventory("Mana1");
+                 //stam = CPlayer.mo.FindInventory("Mana2");
 		if (man) mManaInterpolator.Update(man.Amount);
-        if (stam) mStaminaInterpolator.Update(stam.Amount);
+       // if (stam) mStaminaInterpolator.Update(stam.Amount);
 
     }
 
     void DrawOrbs()
     {
         drawbar("horb","norb",mhealthinterpolator.getvalue(),100,(-129,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
-        drawbar("morb","norb2",mManaInterpolator.getvalue(),200,(79,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
-        drawbar("sorb","norb2",mStaminaInterpolator.getvalue(),200,(107,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        drawbar("morb","norb2",mManaInterpolator.getvalue(),100,(79,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+
+      //  drawbar("sorb","norb2",mStaminaInterpolator.getvalue(),200,(107,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
         DrawImage("HBAR", (-176, -65), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
     }
 
-    void drawAbility(string Icon, Vector2 Location,int minMana, int minStam, int keybind)
+    void drawAbility(string Icon, Vector2 Location,int AttackType, int keybind)
     {
         if(CPLAYER.cmd.Buttons & keybind)
         {
@@ -121,10 +130,27 @@ class HexenRPGHud : BaseStatusBar
         }
         let drawflags = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
 
-        if(CPlayer.mo.findinventory("mana1").amount < minMana
-            || Cplayer.mo.findInventory("mana2").amount < minStam)
+
+        switch(AttackType)
         {
-            drawflags = drawflags|DI_DIM;
+            case WAC_THR:
+                if(CPlayer.mo.findinventory("mana1").amount < 60 )
+                {
+                    drawflags = drawflags|DI_DIM;
+                }
+                break;
+            case WAC_SPEC:
+                if(CPlayer.mo.findinventory("mana1").amount < 45 )
+                {
+                    drawflags = drawflags|DI_DIM;
+                }
+                break;
+            case WAC_ULT:
+                if(CPlayer.mo.findinventory("mana1").amount < 100 )
+                {
+                    drawflags = drawflags|DI_DIM;
+                }
+                break;
         }
         DrawImage(Icon, Location, drawflags);
     }
@@ -199,7 +225,7 @@ class HexenRPGHud : BaseStatusBar
         // should make these optional with a cvar or somehting
 		DrawString(mNumHud, FormatNumber(mHealthInterpolator.GetValue()), (-115, -20),DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
         DrawString(mNumHud, FormatNumber(mManaInterpolator.GetValue()), (90, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
-        DrawString(mNumHud, FormatNumber(mStaminaInterpolator.GetValue()), (110, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        //DrawString(mNumHud, FormatNumber(mStaminaInterpolator.GetValue()), (110, -20), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
 
 
@@ -210,7 +236,7 @@ class HexenRPGHud : BaseStatusBar
             let w = WeaponBase(wieldedWeapon);
             if(wep == "Mace of Attrition")
             {
-                DrawAbility("PENCA0", ability1Pos, w.MainAttackManaCost , w.MainAttackStaminaCost, BT_ATTACK);
+                DrawAbility("PENCA0", ability1Pos, WAC_BAS, BT_ATTACK);
                 DrawProcGlow("PowerProcCooldown",(-74.8,-37));
                 DrawCoolDOwn("PowerCombo1Cooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
                 DrawCoolDOwn("PowerRaiseCooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
@@ -218,11 +244,11 @@ class HexenRPGHud : BaseStatusBar
                 DrawCoolDOwn("PowerLowerCooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
                 DrawCoolDOwn("PowerCombo3Cooldown", (-112,-52), (-46.75,-16), (-72.8,-35));
 
-                DrawAbility("SHOVA0", ability2Pos, w.SecondaryAttackManaCost , w.SecondaryAttackStaminaCost, BT_ALTATTACK);
+                DrawAbility("SHOVA0", ability2Pos, WAC_BAS, BT_ALTATTACK);
                 DrawCoolDown("PowerShoveCooldown", (-36.5,-52), (-9.2, -16),(-36.5,-35));
                 if(CPLAYER.mo.findinventory("FixationAura"))
                 {
-                    DrawAbility("PTRAA0", ability3Pos, w.SpecialAttackManaCost, w.SpecialAttackStaminaCost, BT_RELOAD);
+                    DrawAbility("PTRAA0", ability3Pos, WAC_SPEC, BT_RELOAD);
                     DrawCooldown("powerPetrifyCooldown",(38.4,-52),(28, -16),(1.95,-35),"powerPetrifyCooldownShort");
 
                     // Draw border on selected aura
@@ -231,14 +257,31 @@ class HexenRPGHud : BaseStatusBar
                 }
                 else
                 {
-                    DrawAbility("PTRIA0", ability3Pos, w.SpecialAttackManaCost, w.SpecialAttackStaminaCost, BT_RELOAD);
+                    DrawAbility("PTRIA0", ability3Pos, WAC_SPEC, BT_RELOAD);
                     DrawCooldown("powerPetrifyCooldownshort",(38.8,-52),(28, -16),(1.95,-35),"powerPetrifyCooldown");
                 }
-                DrawAbility("PAURA0",ability4Pos,w.SupportSkillManaCost,w.SupportSkillStaminaCost, BT_ZOOM);
+                DrawAbility("PAURA0",ability4Pos,0, BT_ZOOM);
             }
             else if(wep == "Serpent Staff")
             {
-                DrawAbility("SSSBA0", ability1Pos, w.MainAttackManaCost , w.MainAttackStaminaCost, BT_ATTACK);
+                DrawAbility("SSSBA0", ability1Pos, WAC_BAS, BT_ATTACK);
+                DrawAbility("CSTRKA0", ability2Pos, WAC_THR, BT_ALTATTACK);
+                DrawCoolDown("Powerbitecooldown", (-36.5,-52), (-9.2, -16),(-36.5,-35));
+
+                if(CPLAYER.mo.findinventory("PutrefactionAura"))
+                {
+                    DrawAbility("PTRAA0", ability3Pos, WAC_SPEC, BT_RELOAD);
+                    DrawCooldown("powerCorruptionCooldown",(38.4,-52),(28, -16),(1.95,-35),"powerCorruptionCooldownShort");
+
+                    // Draw border on selected aura
+                    let auralpha = (4+sin(9*gametic))/7;
+                    DrawImage("AAUR", (37,-37), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM,auralpha);
+                }
+                else
+                {
+                    DrawAbility("PTRIA0", ability3Pos, WAC_SPEC, BT_RELOAD);
+                    DrawCooldown("powerCorruptionCooldownshort",(38.8,-52),(28, -16),(1.95,-35),"powerCorruptionCooldown");
+                }
             }
 
         }

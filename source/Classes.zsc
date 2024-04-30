@@ -12,19 +12,22 @@ class Paladin : clericplayer
         Player.StartItem "PaladinMace";
         Player.WeaponSlot 1, "PaladinMace";
         Player.WeaponSlot 2, "PaladinStaff";
-        Player.startitem "mana2",200;
-        Player.startitem "mana1",200;
+       //Player.startitem "mana2",200;
+        //Player.startitem "mana1",100;
         +dontBlast
-        Paladin.StaminaRegeneration true;
+        //Paladin.StaminaRegeneration true;
         Paladin.ManaRegeneration true;
     }
     override int damagemobj(Actor inflictor, Actor source, int damage, Name mod, int flags, double angle)
     {
-        //null check just in case
-        if (!source || !inflictor || !source.bismonster) return super.damagemobj(inflictor,source,damage,mod,flags,angle);;
+        // null check just in case
+        if (!source || !inflictor || !source.bismonster) return super.damagemobj(inflictor,source,damage,mod,flags,angle);
+
+
+        // taken damage with putrefaction aura
         if(countinv("putrefactionaura") > 0)
         {
-            source.a_spawnitemex("reflectPuff",4,0,42,0,0,1,0,SXF_NOCHECKPOSITION|SXF_SETTRACER);
+            source.a_spawnitemex("reflectPuff",4,0,42,0,0,1,0,SXF_NOCHECKPOSITION|SXF_SETTRACER); // Taste Vengeance!
             a_startsound("reflect",0,0,1.0,ATTN_NONE);
         }
         return super.damagemobj(inflictor,source,damage,mod,flags,angle);
@@ -47,7 +50,7 @@ class Paladin : clericplayer
             ticcount--;
             return;
         }
-        if(gametic%3 == 0) // regen every 5th tic
+        if(gametic%35 == 0) // decay every 35th tic
         {
             ManaRegen();
         }
@@ -55,22 +58,18 @@ class Paladin : clericplayer
 
     void GlobalCoolDown()
     {
-        //number of tics the game pauses mana regen for
-        ticcount = countinv("putrefactionaura") > 0 ? 25 : 50;
+        //number of tics the game pauses mana decay for
+        ticcount = 350;//countinv("putrefactionaura") > 0 ? 25 : 50;
     }
 
     void ManaRegen()
     {
-        let regenamount = (countinv("putrefactionaura") > 0) ? 2:1;
+        let regenamount = 10;//(countinv("putrefactionaura") > 0) ? 5:0;
         //mana and stamina is 200 base for cleric
-        if(countinv("Mana1") >= 200)
-            setinventory("mana1",200);
+        if(countinv("Mana1") >= 100)
+            setinventory("mana1",100);
         else if(ManaRegeneration)
-            giveinventory("Mana1",regenamount);
+            takeinventory("Mana1",regenamount);
 
-         if(countinv("Mana2") >= 200)
-            setinventory("mana2",200);
-        else if(StaminaRegeneration)
-            giveinventory("Mana2",regenamount);
     }
 }

@@ -13,11 +13,6 @@ class PaladinStaff : weaponbase
        // +WEAPON.AMMO_OPTIONAL;
         //+WEAPON.ALT_AMMO_OPTIONAL;
         +Weapon.noalert
-        WeaponBase.MainAttackCost 3,0;
-        weaponbase.ChargeAttackCost 0,0;
-        weaponbase.SecondaryAttackCost 30,0;
-        weaponbase.SpecialAttackCost 80,0;
-        weaponbase.SupportSkillCost 0,0;
         +WEAPON.NOAUTOSWITCHTO;
 		Weapon.AmmoType1 "Mana1";
 		Inventory.PickupMessage "$TXT_WEAPON_C2";
@@ -45,12 +40,11 @@ class PaladinStaff : weaponbase
 		CSSF A 1 A_CStaffCheckBlink;
 		Goto Ready + 2;
 	Fire:
-        tnt1 a 0 a_checkattackresource(WAC_MAINATTACK,null,"OOMhold",WSC_NOMANA);
+        //tnt1 a 0 a_checkattackresource(WAC_MAINATTACK,null,"OOMhold",WSC_NOMANA);
 		CSSF A 1 Offset (0, 45) ;//A_CStaffCheck;
 		CSSF J 1 Offset (0, 50)
         {
             a_alertmonsters();
-            a_takeresource(WAC_MAINATTACK);
             A_CStaffAttack();
         }
 		CSSF J 2 Offset (0, 50);
@@ -63,7 +57,7 @@ class PaladinStaff : weaponbase
 		Goto Ready + 2;
 
     altfire:
-        tnt1 a 0 a_checkattackresource(WAC_SECONDARYATTACK,null,"OOMhold",WSC_NOMANA);
+        tnt1 a 0 a_checkattackresource(WAC_THRESHOLD,null,"OOMhold",WSC_NOMANA);
         tnt1 a 0 a_jumpifinventory("Powerbitecooldown",1,"actualready");
         CSSF A 2 a_startsound("snekcharge");
 
@@ -76,7 +70,7 @@ class PaladinStaff : weaponbase
             a_cstaffbite();
             //a_custompunch(random(40,80),true,CPF_PULLIN,"CStaffPuff",96,0.5);
             a_giveinventory("BiteCooldown",1);
-            a_takeresource(WAC_SECONDARYATTACK);
+            A_HandleResource(WAC_THRESHOLD);
         }
         CSSF M 2 Offset (0,45);
         CSSF A 1 Offset (0,40);
@@ -94,6 +88,8 @@ class PaladinStaff : weaponbase
         }
         goto ready+2;
     Reload:
+        tnt1 a 0 a_checkattackresource(WAC_ULTIMATE,null,"OOMhold",WSC_NOMANA);
+        tnt1 a 0 a_jumpifinventory("PowerCorruptioncooldown",1,"actualready");
         CSCB ABBCCCCCC 1;
         CSCB D 2
         {
@@ -105,11 +101,14 @@ class PaladinStaff : weaponbase
              {
                 A_setblend("olivedrab3",.8,18);
                 a_startsound("corrupt");
+                a_giveinventory("CorruptionCooldown",1);
             }
             else
             {
                 a_startsound("corrupt2");
+                a_giveinventory("CorruptionCooldownShort",1);
             }
+            A_HandleResource(WAC_ULTIMATE);
 
         }
         tnt1 a 0 a_CStaffCorrupt(countinv("putrefactionaura") > 0);
@@ -297,6 +296,41 @@ class PaladinStaff : weaponbase
 			}
 		}
 	}
+}
+
+class powerCorruptionCooldown : powerup
+{
+    default
+    {
+        powerup.duration -60;
+    }
+}
+
+class CorruptionCooldown : powerupGiver
+{
+    default
+    {
+        Powerup.Type "PowerCorruptionCooldown";
+        +inventory.AUTOACTIVATE
+    }
+}
+
+
+class powerCorruptionCooldownShort : powerup
+{
+    default
+    {
+        powerup.duration -40;
+    }
+}
+
+class CorruptionCooldownShort : powerupGiver
+{
+    default
+    {
+        Powerup.Type "PowerCorruptionCooldownShort";
+        +inventory.AUTOACTIVATE
+    }
 }
 
 class powerBiteCooldown : Powerup
@@ -498,11 +532,32 @@ class SerpentStaffMissile : CStaffMissile
 {
     default
     {
+
         poisondamagetype "poisoncloud";
        // +forcepain;
         +additivepoisondamage
         damageFunction 8;
         Poisondamage 2,5;
+    }
+    override void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+	}
+
+    override int DoSpecialDamage(Actor target, int damage, name damagetype)
+    {
+
+        //must be handled specially to avoid overfilling player mana
+        let pl = self.target.player;
+        if(pl)
+        {
+            if(pl.readyweapon)
+            {
+                weaponbase(pl.ReadyWeapon).testmissileprojectile();
+                weaponbase(pl.ReadyWeapon).A_HandleResource(weaponbase.WAC_BASIC);
+            }
+        }
+        return super.DoSpecialDamage(target, damage, damagetype);
     }
 }
 

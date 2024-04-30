@@ -8,11 +8,6 @@ class PaladinMace : WeaponBase //CWeapMace
 		Weapon.YAdjust -8;
 		+BLOODSPLATTER
         +Weapon.noalert
-        WeaponBase.MainAttackCost 0,4; // multiples of this are used for different combo costs
-        weaponbase.ChargeAttackCost 0,30;
-        weaponbase.SecondaryAttackCost 0,12;
-        weaponbase.SpecialAttackCost 40,0;
-        weaponbase.SupportSkillCost 0,0;
 		Tag "Mace of Attrition";
 
 	}
@@ -48,8 +43,7 @@ class PaladinMace : WeaponBase //CWeapMace
         goto ready;
     //normal mace attack (raise up)
     Fire:
-        tnt1 a 0 A_CheckAttackResource(WAC_MAINATTACK,null,"hold");
-        tnt1 a 0 a_takeResource(WAC_MAINATTACK);
+        //tnt1 a 0 A_CheckAttackResource(WAC_MAINATTACK,null,"hold");
         CMCE A 1 Offset (4,34) ;
         CMCE B 1 Offset (15, 16);
         CMCE B 3 Offset (30, 33);
@@ -89,7 +83,7 @@ class PaladinMace : WeaponBase //CWeapMace
 		CMCE F 4 Offset (-33, 160);
         CMCE F 2;
         tnt1 a 0 a_giveinventory("ProcCooldown",1);
-        CMCE FFFFFFFFFFFFFFFFFF 1 a_checkcombocontinue("fire2","altfire");
+        CMCE FFFFFFFFFFFFFFFFFF 1 a_checkcombocontinue(WAC_BASIC,"fire2","altfire");
     //weapon rise attack (combo 2)
     raisewep:
         CMCE A 0 a_giveinventory("RaiseCooldown",1);
@@ -110,7 +104,6 @@ class PaladinMace : WeaponBase //CWeapMace
     fire2:
         tnt1 a 0 a_giveinventory("Combo2Cooldown",1);
         tnt1 a 0 a_takeinventory("powerprocCooldown",1);
-        tnt1 a 0 a_takeresource(WAC_MAINATTACK);
         CMCE F 2 Offset (-33,160);
         CMCE F 1 Offset (-20,160);
         CMCE E 1 Offset (-6,96) a_recoil(-3);
@@ -126,7 +119,7 @@ class PaladinMace : WeaponBase //CWeapMace
         CMCE C 2 Offset (55,120);
         CMCE C 5 Offset (60,130);
         tnt1 a 0 a_giveinventory("ProcCooldown",1);
-        CMCE CCCCCCCCCCCCCCC 1 a_checkcombocontinue("fire3","altfire");
+        CMCE CCCCCCCCCCCCCCC 1 a_checkcombocontinue(WAC_BASIC,"fire3","altfire");
     lowerwep:
         tnt1 a 0 a_giveinventory("LowerCooldown",1);
         tnt1 a 0 a_takeinventory("powerprocCooldown",1);
@@ -146,7 +139,6 @@ class PaladinMace : WeaponBase //CWeapMace
     fire3:
         tnt1 a 0 a_giveinventory("Combo3Cooldown",1);
         tnt1 a 0 a_takeinventory("powerprocCooldown",1);
-        tnt1 a 0 a_takeresource(WAC_MAINATTACK);
         CMCE C 1 Offset (30, 130);
         CMCE C 1 Offset (50, 115);
         CMCE C 1 Offset (90, 100);
@@ -177,7 +169,7 @@ class PaladinMace : WeaponBase //CWeapMace
     //shove
     altfire:
         tnt1 a 0 a_takeinventory("powerprocCooldown",1);
-        tnt1 a 0 a_checkattackresource(WAC_SECONDARYATTACK,null,"hold");
+        //tnt1 a 0 a_checkattackresource(WAC_BASIC,null,"hold");
         tnt1 a 0 a_jumpifinventory("PowershoveCooldown",1,"hold");
         tnt1 a 0 A_weaponready(WRF_NoSwitch|WRF_NOFIRE|WRF_allowReload|WRF_ALLOWZOOM);
         CMCE A 1 a_giveinventory("ShoveCooldown",1);
@@ -187,7 +179,6 @@ class PaladinMace : WeaponBase //CWeapMace
         MACB C 1;
         MACB B 8
         {
-            a_takeresource(WAC_SECONDARYATTACK);
             A_macePush(18);
         }
         MACB B 5 Offset (-4,28);
@@ -210,7 +201,7 @@ class PaladinMace : WeaponBase //CWeapMace
         }
         goto ready;
     Reload:
-        tnt1 a 0 a_checkattackresource(WAC_SPECIALATTACK,null,"reloadhold",WSC_NOMANA);
+        tnt1 a 0 a_checkattackresource(WAC_ULTIMATE,null,"reloadhold",WSC_NOMANA);
         tnt1 a 0 a_jumpifinventory("Powerpetrifycooldown",1,"reloadhold");
         tnt1 a 0 a_jumpifinventory("Powerpetrifycooldownshort",1,"reloadhold");
         MPTR A 2
@@ -243,7 +234,6 @@ class PaladinMace : WeaponBase //CWeapMace
                 a_macespray();
                 a_Startsound("Petr");
 
-                a_takeresource(WAC_SPECIALATTACK);
             }
             else
             {
@@ -251,10 +241,10 @@ class PaladinMace : WeaponBase //CWeapMace
                 a_Startsound("Petr2");
 
                 A_explode(40,360.,XF_NOTMISSILE,true);
-                a_takeresource(WAC_SPECIALATTACK);
+
                 //a_giveinventory("mana1",40); //manually override it here, not normal behavior
             }
-
+            A_HandleResource(WAC_ULTIMATE);
         }
         MPTR C 1 a_light(1);
         MPTR C 4 a_light(0);
@@ -297,6 +287,7 @@ class PaladinMace : WeaponBase //CWeapMace
 				double slope = AimLineAttack(ang, 1 * DEFMELEERANGE, t, 0., ALF_CHECK3D);
 				if (t.linetarget)
 				{
+
 					LineAttack(ang, 1 * DEFMELEERANGE, slope, 30, 'Melee', "PainPuff", true, t);
 
 					if (t.linetarget != null)
@@ -305,6 +296,7 @@ class PaladinMace : WeaponBase //CWeapMace
                         A_alertMonsters();
                         if (t.linetarget.bIsMonster || t.linetarget.player)
 						{
+                            A_HandleResource(WAC_BASIC);
 							t.linetarget.Thrust(recoil, t.attackAngleFromSource);
 						}
 						return;
@@ -344,6 +336,7 @@ class PaladinMace : WeaponBase //CWeapMace
                         A_alertMonsters();
                         if (t.linetarget.bIsMonster || t.linetarget.player)
 						{
+                            A_HandleResource(WAC_BASIC);
 							t.linetarget.Thrust(recoil, t.attackAngleFromSource);
 						}
 						return;

@@ -26,62 +26,65 @@ Class WeaponBase : Weapon
         WAC_SUPPORTSKILL,
     }
 
+    Enum WeaponAbilityType
+    {
+        WAC_NONE,
+        WAC_BASIC,
+        WAC_THRESHOLD,
+        WAC_SPECIAL,
+        WAC_ULTIMATE,
+    }
+    /*
     //boy howdy would i love to have a tuple or a struct for this but
     //le no chicken said it doesnt work that way so fug
-    int MainAttackManaCost;
-    int MainAttackStaminaCost;
-    int ChargeAttackManaCost;
-    int ChargeAttackStaminaCost;
-    int SecondaryAttackManaCost;
-    int SecondaryAttackStaminaCost;
-    int SpecialAttackManaCost;
-    int SpecialAttackStaminaCost;
-    int SupportSkillManaCost;
-    int SupportSkillStaminaCost;
+    int MainAttackType;
 
-    Property MainAttackCost : MainAttackManaCost, MainAttackStaminaCost;
-    Property ChargeAttackCost : ChargeAttackManaCost, ChargeAttackStaminaCost;
-    Property SecondaryAttackCost : SecondaryAttackManaCost, SecondaryAttackStaminaCost;
-    Property SpecialAttackCost : SpecialAttackManaCost, SpecialAttackStaminaCost;
-    Property SupportSkillCost :  SupportSkillManaCost, SupportSkillStaminaCost;
+    int ChargeAttackType;
+
+    int SecondaryAttackType;
+
+    int SpecialAttackType;
+
+    int SupportSkillType;
+
+
+    Property MainAttackType : MainAttackType;
+    Property ChargeAttackType : ChargeAttackType;
+    Property SecondaryAttackType : SecondaryAttackType;
+    Property SpecialAttackType : SpecialAttackType;
+    Property SupportSkillType :  SupportSkillType;
 
     default
     {
-        WeaponBase.MainAttackCost 0, 0;
-        weaponbase.ChargeAttackCost 0, 0;
-        weaponbase.SecondaryAttackCost 0, 0;
-        weaponbase.SpecialAttackCost 0, 0;
-        weaponbase.SupportSkillCost 0, 0;
-    }
+        WeaponBase.MainAttackType WAC_BASIC;
+        weaponbase.ChargeAttackType WAC_THRESHOLD;
+        weaponbase.SecondaryAttackType WAC_THRESHOLD;
+        weaponbase.SpecialAttackType WAC_ULTIMATE;
+        weaponbase.SupportSkillType WAC_NONE;
+    }*/
 
-    action void A_TakeResource(int AttackType)
+    action void A_HandleResource(int AttackType)
     {
         //activate global cooldown
         //TODO: replace this with generic playerpawn class that all player
         //classes will inherit from
         paladin(self).globalcooldown();
-
         switch(AttackType)
         {
-            case WAC_MAINATTACK:
-                takeinventory("mana1",invoker.MainAttackManaCost);
-                takeinventory("mana2",invoker.MainAttackStaminaCost);
+            case WAC_BASIC:
+                if(countinv("mana1") >= 92)
+                    setinventory("mana1",100);
+                else
+                    giveinventory("mana1",4);
                 break;
-            case WAC_CHARGEATTACK:
-                takeinventory("mana1",invoker.ChargeAttackManaCost);
-                takeinventory("mana2",invoker.ChargeAttackStaminaCost);
+            case WAC_THRESHOLD:
+                takeinventory("mana1",20);
                 break;
-            case WAC_SECONDARYATTACK:
-                takeinventory("mana1",invoker.SecondaryAttackManaCost);
-                takeinventory("mana2",invoker.SecondaryAttackStaminaCost);
+            case WAC_SPECIAL:
+                takeinventory("mana1",45);
                 break;
-            case WAC_SPECIALATTACK:
-                takeinventory("mana1",invoker.SpecialAttackManaCost);
-                takeinventory("mana2",invoker.SpecialAttackStaminaCost);
-                break;
-            case WAC_SUPPORTSKILL:
-                takeinventory("mana1",invoker.SupportSkillManaCost);
-                takeinventory("mana2",invoker.SupportSkillStaminaCost);
+            case WAC_ULTIMATE:
+                takeinventory("mana1",100);
                 break;
         }
     }
@@ -116,31 +119,20 @@ Class WeaponBase : Weapon
     {
         switch(AttackType)
         {
-            case WAC_MAINATTACK:
-                if(countinv("mana1") >= invoker.mainattackManacost &&
-                    countinv("mana2") >= invoker.mainattackStaminacost)
-                        return resolvestate(statesuccess);
-
+            case WAC_BASIC:
+                return resolvestate(statesuccess);
                 break;
-            case WAC_CHARGEATTACK:
-                 if(countinv("mana1") >= invoker.ChargeattackManacost &&
-                    countinv("mana2") >= invoker.ChargeattackStaminacost)
-                        return resolvestate(statesuccess);
+            case WAC_THRESHOLD:
+                if(countinv("mana1") >= 60)
+                    return resolvestate(statesuccess);
                 break;
-            case WAC_SECONDARYATTACK:
-                if(countinv("mana1") >= invoker.SecondaryattackManacost &&
-                    countinv("mana2") >= invoker.SecondaryattackStaminacost)
-                        return resolvestate(statesuccess);
+            case WAC_SPECIAL:
+                if(countinv("mana1") >= 45)
+                    return resolvestate(statesuccess);
                 break;
-            case WAC_SPECIALATTACK:
-                if(countinv("mana1") >= invoker.SpecialattackManacost &&
-                    countinv("mana2") >= invoker.SpecialattackStaminacost)
-                        return resolvestate(statesuccess);
-                break;
-            case WAC_SUPPORTSKILL:
-                if(countinv("mana1") >= invoker.SupportSkillManaCost &&
-                    countinv("mana2") >= invoker.SupportSkillStaminaCost)
-                        return resolvestate(statesuccess);
+            case WAC_ULTIMATE:
+                if(countinv("mana1") >= 100)
+                    return resolvestate(statesuccess);
                 break;
         }
         switch(playsound)
@@ -176,16 +168,22 @@ Class WeaponBase : Weapon
 
     }
 
-    action state A_CheckComboContinue(statelabel ComboContinueState, statelabel AltComboContinueState)
+    //hard-coded to basic attack, hope this works
+    action state A_CheckComboContinue(int attackType, statelabel ComboContinueState, statelabel AltComboContinueState)
     {
+
         if(JustPressedfire())
         {
-            return a_checkattackresource(WAC_MAINATTACK,ComboContinueState,null);
+            return a_checkattackresource(attackTYPE,ComboContinueState,null);
         }
         if(JustPressedaltfire())
         {
-            return a_checkattackresource(WAC_secondaryattack,AltComboContinueState,null);
+            return a_checkattackresource(attackTYPE,AltComboContinueState,null);
         }
         return resolvestate(null);
+    }
+    action void testmissileprojectile()
+    {
+        a_log("boop");
     }
 }

@@ -23,6 +23,12 @@ class Fixauradmg : powerDamage
         DamageFactor "Normal", 1.1;
         activesound "DmgSwing";
     }
+    override void ModifyDamage(int damage, Name damageType, out int newdamage, bool passive, Actor inflictor, Actor source, int flags)
+	{
+		if(damageType != 'poisoncloud')
+            super.modifydamage(damage,damageType,newdamage,passive,inflictor,source,flags);
+        return;
+	}
 }
 
 //used to ensure aura is only given once
