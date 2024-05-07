@@ -244,7 +244,7 @@ class PaladinMace : WeaponBase //CWeapMace
 
                 //a_giveinventory("mana1",40); //manually override it here, not normal behavior
             }
-            A_HandleResource(WAC_ULTIMATE);
+            A_HandleResource(WAC_ULTIMATE, 0);
         }
         MPTR C 1 a_light(1);
         MPTR C 4 a_light(0);
@@ -296,7 +296,7 @@ class PaladinMace : WeaponBase //CWeapMace
                         A_alertMonsters();
                         if (t.linetarget.bIsMonster || t.linetarget.player)
 						{
-                            A_HandleResource(WAC_BASIC);
+                            A_HandleResource(WAC_BASIC,4);
 							t.linetarget.Thrust(recoil, t.attackAngleFromSource);
 						}
 						return;
@@ -336,7 +336,7 @@ class PaladinMace : WeaponBase //CWeapMace
                         A_alertMonsters();
                         if (t.linetarget.bIsMonster || t.linetarget.player)
 						{
-                            A_HandleResource(WAC_BASIC);
+                            A_HandleResource(WAC_BASIC, 4);
 							t.linetarget.Thrust(recoil, t.attackAngleFromSource);
 						}
 						return;

@@ -63,32 +63,38 @@ Class WeaponBase : Weapon
         weaponbase.SupportSkillType WAC_NONE;
     }*/
 
-    action void A_HandleResource(int AttackType)
+    action void A_HandleResource(int AttackType, int ManaPerHit)
     {
         //activate global cooldown
         //TODO: replace this with generic playerpawn class that all player
         //classes will inherit from
+
+        let max_mana = GetAmmoCapacity ("mana1");
+
         if(invoker && invoker.owner)
         {
-            paladin(invoker.owner).globalcooldown();
-        }
-        switch(AttackType)
-        {
-            case WAC_BASIC:
-                if(countinv("mana1") >= 92)
-                    setinventory("mana1",100);
-                else
-                    giveinventory("mana1",4);
-                break;
-            case WAC_THRESHOLD:
-                takeinventory("mana1",20);
-                break;
-            case WAC_SPECIAL:
-                takeinventory("mana1",45);
-                break;
-            case WAC_ULTIMATE:
-                takeinventory("mana1",100);
-                break;
+            let plr = invoker.owner;
+            paladin(plr).globalcooldown();
+
+            switch(AttackType)
+            {
+
+                case WAC_BASIC:
+                    if(plr.countinv("mana1") >= max_mana-ManaPerHit)
+                        plr.setinventory("mana1",max_mana);
+                    else
+                        plr.giveinventory("mana1",ManaPerHit);
+                    break;
+                case WAC_THRESHOLD:
+                    plr.takeinventory("mana1",20);
+                    break;
+                case WAC_SPECIAL:
+                    plr.takeinventory("mana1",45);
+                    break;
+                case WAC_ULTIMATE:
+                    plr.takeinventory("mana1",100);
+                    break;
+            }
         }
     }
 

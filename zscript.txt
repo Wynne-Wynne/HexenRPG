@@ -11,9 +11,6 @@ version "4.7.1"
 #include "source/HUD.zsc"
 
 
-
-
-
 /*class GetInput : EventHandler
 {
 

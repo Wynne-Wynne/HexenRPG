@@ -116,7 +116,7 @@ class HexenRPGHud : BaseStatusBar
     void DrawOrbs()
     {
         drawbar("horb","norb",mhealthinterpolator.getvalue(),100,(-129,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
-        drawbar("morb","norb2",mManaInterpolator.getvalue(),100,(79,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        drawbar("morb","norb2",mManaInterpolator.getvalue(),200,(79,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
       //  drawbar("sorb","norb2",mStaminaInterpolator.getvalue(),200,(107,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
         DrawImage("HBAR", (-176, -65), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);

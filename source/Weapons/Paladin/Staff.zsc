@@ -70,7 +70,7 @@ class PaladinStaff : weaponbase
             a_cstaffbite();
             //a_custompunch(random(40,80),true,CPF_PULLIN,"CStaffPuff",96,0.5);
             a_giveinventory("BiteCooldown",1);
-            A_HandleResource(WAC_THRESHOLD);
+            A_HandleResource(WAC_THRESHOLD, 0);
         }
         CSSF M 2 Offset (0,45);
         CSSF A 1 Offset (0,40);
@@ -108,7 +108,7 @@ class PaladinStaff : weaponbase
                 a_startsound("corrupt2");
                 a_giveinventory("CorruptionCooldownShort",1);
             }
-            A_HandleResource(WAC_ULTIMATE);
+            A_HandleResource(WAC_ULTIMATE, 0);
 
         }
         tnt1 a 0 a_CStaffCorrupt(countinv("putrefactionaura") > 0);
@@ -548,12 +548,8 @@ class SerpentStaffMissile : CStaffMissile
             {
                 if(target && target.player && target.player.readyweapon)
                 {
-                    WeaponBase(target.Player.Readyweapon).a_handleresource(WeaponBase.WAC_NONE);
+                    WeaponBase(target.Player.Readyweapon).a_handleresource(WeaponBase.WAC_BASIC, 2);
                 }
-                if(countinv("mana1",AAPTR_TARGET) >= 92)
-                    a_setinventory("mana1",100,AAPTR_TARGET);
-                else
-                    a_giveinventory("mana1",1,AAPTR_TARGET);
             }
         Crash:
             goto super::Death;
