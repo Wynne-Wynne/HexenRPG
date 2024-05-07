@@ -3,6 +3,6 @@ Gameplay modfication for _Hexen: Beyond Heretic_ running on the **(G)Zdoom** eng
 
 Name recommendations are very much welcome. 
 
-Current proposals (More or less inspired by _Diablo II_'s format and yet still remaining distinct from already existing mod _Wrath of Cronos_) include): 
+Current proposals (More or less inspired by _Diablo II_'s format and yet still remaining distinct from already existing mod _Wrath of Cronos_) include: 
 - **HexenRPG: Lord of Cronos** (give or take the RPG)
 - **Korax: Lord of Cronos**
