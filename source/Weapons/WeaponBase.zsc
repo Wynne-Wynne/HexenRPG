@@ -74,9 +74,9 @@ Class WeaponBase : Weapon
         {
             case WAC_BASIC:
                 if(countinv("mana1") >= 92)
-                    setinventory("mana1",100);
+                    paladin(self).setinventory("mana1",100);
                 else
-                    giveinventory("mana1",4);
+                    paladin(self).giveinventory("mana1",4);
                 break;
             case WAC_THRESHOLD:
                 takeinventory("mana1",20);
