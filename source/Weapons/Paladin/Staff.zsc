@@ -208,6 +208,7 @@ class PaladinStaff : weaponbase
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
+
 		Actor mo = SpawnPlayerMissile ("SerpentStaffMissile", angle - 3.0);
 		if (mo)
 		{
@@ -539,12 +540,31 @@ class SerpentStaffMissile : CStaffMissile
         damageFunction 8;
         Poisondamage 2,5;
     }
+
+    states
+    {
+        XDeath:
+            TNT1 a 0
+            {
+                if(target && target.player && target.player.readyweapon)
+                {
+                    WeaponBase(target.Player.Readyweapon).a_handleresource(WeaponBase.WAC_NONE);
+                }
+                if(countinv("mana1",AAPTR_TARGET) >= 92)
+                    a_setinventory("mana1",100,AAPTR_TARGET);
+                else
+                    a_giveinventory("mana1",1,AAPTR_TARGET);
+            }
+        Crash:
+            goto super::Death;
+    }
+
     override void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
 	}
 
-    override int DoSpecialDamage(Actor target, int damage, name damagetype)
+   /*override int DoSpecialDamage(Actor target, int damage, name damagetype)
     {
 
         //must be handled specially to avoid overfilling player mana
@@ -553,11 +573,11 @@ class SerpentStaffMissile : CStaffMissile
         {
             if(pl.readyweapon)
             {
-                weaponbase(pl.ReadyWeapon).testmissileprojectile();
+                //weaponbase(pl.ReadyWeapon).testmissileprojectile();
                 weaponbase(pl.ReadyWeapon).A_HandleResource(weaponbase.WAC_BASIC);
             }
         }
         return super.DoSpecialDamage(target, damage, damagetype);
-    }
+    }*/
 }
 

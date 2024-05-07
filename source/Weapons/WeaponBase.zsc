@@ -68,15 +68,17 @@ Class WeaponBase : Weapon
         //activate global cooldown
         //TODO: replace this with generic playerpawn class that all player
         //classes will inherit from
-        if (paladin(self))
-            paladin(self).globalcooldown();
+        if(invoker && invoker.owner)
+        {
+            paladin(invoker.owner).globalcooldown();
+        }
         switch(AttackType)
         {
             case WAC_BASIC:
                 if(countinv("mana1") >= 92)
-                    paladin(self).setinventory("mana1",100);
+                    setinventory("mana1",100);
                 else
-                    paladin(self).giveinventory("mana1",4);
+                    giveinventory("mana1",4);
                 break;
             case WAC_THRESHOLD:
                 takeinventory("mana1",20);
@@ -182,9 +184,5 @@ Class WeaponBase : Weapon
             return a_checkattackresource(attackTYPE,AltComboContinueState,null);
         }
         return resolvestate(null);
-    }
-    action void testmissileprojectile()
-    {
-        a_log("boop");
     }
 }
