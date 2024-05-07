@@ -18,7 +18,7 @@ Steps to reproduce the behavior:
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iOS]
+ - OS: [e.g. Gentoo Linux]
  - GZDoom Version [e.g. 2.8.1]
 
 **Additional context**
