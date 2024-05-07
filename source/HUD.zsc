@@ -131,27 +131,32 @@ class HexenRPGHud : BaseStatusBar
         let drawflags = DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM;
 
 
-        switch(AttackType)
+        if (CPLAYER.mo.findinventory("mana1"))
         {
-            case WAC_THR:
-                if(CPlayer.mo.findinventory("mana1").amount < 60 )
-                {
-                    drawflags = drawflags|DI_DIM;
-                }
-                break;
-            case WAC_SPEC:
-                if(CPlayer.mo.findinventory("mana1").amount < 45 )
-                {
-                    drawflags = drawflags|DI_DIM;
-                }
-                break;
-            case WAC_ULT:
-                if(CPlayer.mo.findinventory("mana1").amount < 100 )
-                {
-                    drawflags = drawflags|DI_DIM;
-                }
-                break;
+            switch(AttackType)
+            {
+                case WAC_THR:
+                    if(CPlayer.mo.findinventory("mana1").amount < 60 )
+                    {
+                        drawflags = drawflags|DI_DIM;
+                    }
+                    break;
+                case WAC_SPEC:
+                    if(CPlayer.mo.findinventory("mana1").amount < 45 )
+                    {
+                        drawflags = drawflags|DI_DIM;
+                    }
+                    break;
+                case WAC_ULT:
+                    if(CPlayer.mo.findinventory("mana1").amount < 100 )
+                    {
+                        drawflags = drawflags|DI_DIM;
+                    }
+                    break;
+            }
         }
+        else if (AttackType != WAC_BAS)
+            drawflags = drawflags|DI_DIM;
         DrawImage(Icon, Location, drawflags);
     }
 
@@ -248,7 +253,7 @@ class HexenRPGHud : BaseStatusBar
                 DrawCoolDown("PowerShoveCooldown", (-36.5,-52), (-9.2, -16),(-36.5,-35));
                 if(CPLAYER.mo.findinventory("FixationAura"))
                 {
-                    DrawAbility("PTRAA0", ability3Pos, WAC_SPEC, BT_RELOAD);
+                    DrawAbility("PTRAA0", ability3Pos, WAC_ULT, BT_RELOAD);
                     DrawCooldown("powerPetrifyCooldown",(38.4,-52),(28, -16),(1.95,-35),"powerPetrifyCooldownShort");
 
                     // Draw border on selected aura
@@ -257,7 +262,7 @@ class HexenRPGHud : BaseStatusBar
                 }
                 else
                 {
-                    DrawAbility("PTRIA0", ability3Pos, WAC_SPEC, BT_RELOAD);
+                    DrawAbility("PTRIA0", ability3Pos, WAC_spec, BT_RELOAD);
                     DrawCooldown("powerPetrifyCooldownshort",(38.8,-52),(28, -16),(1.95,-35),"powerPetrifyCooldown");
                 }
                 DrawAbility("PAURA0",ability4Pos,0, BT_ZOOM);
