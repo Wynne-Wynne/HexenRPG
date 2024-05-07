@@ -68,7 +68,8 @@ Class WeaponBase : Weapon
         //activate global cooldown
         //TODO: replace this with generic playerpawn class that all player
         //classes will inherit from
-        paladin(self).globalcooldown();
+        if (paladin(self))
+            paladin(self).globalcooldown();
         switch(AttackType)
         {
             case WAC_BASIC:

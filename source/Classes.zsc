@@ -59,6 +59,7 @@ class Paladin : clericplayer
     void GlobalCoolDown()
     {
         //number of tics the game pauses mana decay for
+        //if(ticcount)
         ticcount = 350;//countinv("putrefactionaura") > 0 ? 25 : 50;
     }
 
