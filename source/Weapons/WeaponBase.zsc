@@ -80,10 +80,10 @@ Class WeaponBase : Weapon
             {
 
                 case WAC_BASIC:
-                    if(plr.countinv("mana1") >= max_mana-ManaPerHit)
+                    /*if(plr.countinv("mana1") >= max_mana-ManaPerHit)
                         plr.setinventory("mana1",max_mana);
                     else
-                        plr.giveinventory("mana1",ManaPerHit);
+                        plr.giveinventory("mana1",ManaPerHit);*/
                     break;
                 case WAC_THRESHOLD:
                     plr.takeinventory("mana1",20);

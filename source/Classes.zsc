@@ -37,6 +37,8 @@ class Paladin : clericplayer
     {
         super.postbeginplay();
         ticcount = 0;
+        let max_mana = GetAmmoCapacity ("mana1");
+        setinventory("mana1",max_mana);
     }
     override void Tick()
 	{
@@ -65,7 +67,7 @@ class Paladin : clericplayer
 
     void ManaRegen()
     {
-        let regenamount = (countinv("putrefactionaura") > 0) ? 20:10;
+        /*let regenamount = (countinv("putrefactionaura") > 0) ? 20:10;
         let max_regen = (countinv("putrefactionaura") > 0) ? 100:50;
         let max_mana = GetAmmoCapacity ("mana1");
 
@@ -75,6 +77,9 @@ class Paladin : clericplayer
             if(countinv("Mana1") < 50)
                 giveinventory("Mana1",regenamount);
             else if(countinv("Mana1") > 50)
-                takeinventory("Mana1",regenamount);
+                takeinventory("Mana1",regenamount);*/
+        let max_mana = GetAmmoCapacity ("mana1");
+        if(countinv("Mana1") < max_mana)
+                giveinventory("Mana1",1);
     }
 }
