@@ -179,7 +179,7 @@ class PaladinMace : WeaponBase //CWeapMace
         MACB C 1;
         MACB B 8
         {
-            A_macePush(18);
+            A_macePush(64); //was 18
         }
         MACB B 5 Offset (-4,28);
         MACB C 5 Offset (-8,25);
@@ -201,7 +201,15 @@ class PaladinMace : WeaponBase //CWeapMace
         }
         goto ready;
     Reload:
-        tnt1 a 0 a_checkattackresource(WAC_ULTIMATE,null,"reloadhold",WSC_NOMANA);
+        tnt1 a 0
+        {
+             if(countinv("fixationaura") > 0)
+                return a_checkattackresource(WAC_ULTIMATE,null,"reloadhold",WSC_NOMANA);
+            else
+                return a_checkattackresource(WAC_SPECIAL,null,"reloadhold",WSC_NOMANA);
+
+            return ResolveState(null);
+        }
         tnt1 a 0 a_jumpifinventory("Powerpetrifycooldown",1,"reloadhold");
         tnt1 a 0 a_jumpifinventory("Powerpetrifycooldownshort",1,"reloadhold");
         MPTR A 2
@@ -233,7 +241,7 @@ class PaladinMace : WeaponBase //CWeapMace
                 A_setblend("light goldenrod",.9,25);
                 a_macespray();
                 a_Startsound("Petr");
-
+                A_HandleResource(WAC_ULTIMATE);
             }
             else
             {
@@ -241,10 +249,8 @@ class PaladinMace : WeaponBase //CWeapMace
                 a_Startsound("Petr2");
 
                 A_explode(40,360.,XF_NOTMISSILE,true);
-
-                //a_giveinventory("mana1",40); //manually override it here, not normal behavior
+                A_HandleResource(WAC_SPECIAL);
             }
-            A_HandleResource(WAC_ULTIMATE, 0);
         }
         MPTR C 1 a_light(1);
         MPTR C 4 a_light(0);
@@ -296,7 +302,7 @@ class PaladinMace : WeaponBase //CWeapMace
                         A_alertMonsters();
                         if (t.linetarget.bIsMonster || t.linetarget.player)
 						{
-                            A_HandleResource(WAC_BASIC,4);
+                            A_HandleResource(WAC_BASIC);
 							t.linetarget.Thrust(recoil, t.attackAngleFromSource);
 						}
 						return;
@@ -336,7 +342,7 @@ class PaladinMace : WeaponBase //CWeapMace
                         A_alertMonsters();
                         if (t.linetarget.bIsMonster || t.linetarget.player)
 						{
-                            A_HandleResource(WAC_BASIC, 4);
+                            A_HandleResource(WAC_BASIC);
 							t.linetarget.Thrust(recoil, t.attackAngleFromSource);
 						}
 						return;

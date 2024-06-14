@@ -30,6 +30,7 @@ Class WeaponBase : Weapon
     {
         WAC_NONE,
         WAC_BASIC,
+        WAC_MANABASIC,
         WAC_THRESHOLD,
         WAC_SPECIAL,
         WAC_ULTIMATE,
@@ -63,7 +64,7 @@ Class WeaponBase : Weapon
         weaponbase.SupportSkillType WAC_NONE;
     }*/
 
-    action void A_HandleResource(int AttackType, int ManaPerHit)
+    action void A_HandleResource(int AttackType)
     {
         //activate global cooldown
         //TODO: replace this with generic playerpawn class that all player
@@ -78,12 +79,10 @@ Class WeaponBase : Weapon
 
             switch(AttackType)
             {
-
                 case WAC_BASIC:
-                    /*if(plr.countinv("mana1") >= max_mana-ManaPerHit)
-                        plr.setinventory("mana1",max_mana);
-                    else
-                        plr.giveinventory("mana1",ManaPerHit);*/
+                    break;
+                case WAC_MANABASIC:
+                    plr.takeinventory("mana1",4);
                     break;
                 case WAC_THRESHOLD:
                     plr.takeinventory("mana1",20);
@@ -131,8 +130,12 @@ Class WeaponBase : Weapon
             case WAC_BASIC:
                 return resolvestate(statesuccess);
                 break;
+            case WAC_MANABASIC:
+                if(countinv("mana1") >= 8)
+                    return resolvestate(statesuccess);
+                break;
             case WAC_THRESHOLD:
-                if(countinv("mana1") >= 60)
+                if(countinv("mana1") >= 20)
                     return resolvestate(statesuccess);
                 break;
             case WAC_SPECIAL:

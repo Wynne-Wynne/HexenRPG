@@ -40,12 +40,13 @@ class PaladinStaff : weaponbase
 		CSSF A 1 A_CStaffCheckBlink;
 		Goto Ready + 2;
 	Fire:
-        //tnt1 a 0 a_checkattackresource(WAC_MAINATTACK,null,"OOMhold",WSC_NOMANA);
+        tnt1 a 0 a_checkattackresource(WAC_MANABASIC,null,"OOMhold",WSC_NOMANA);
 		CSSF A 1 Offset (0, 45) ;//A_CStaffCheck;
 		CSSF J 1 Offset (0, 50)
         {
             a_alertmonsters();
             A_CStaffAttack();
+            A_HandleResource(WAC_MANABASIC);
         }
 		CSSF J 2 Offset (0, 50);
 		CSSF J 2 Offset (0, 45);
@@ -70,7 +71,7 @@ class PaladinStaff : weaponbase
             a_cstaffbite();
             //a_custompunch(random(40,80),true,CPF_PULLIN,"CStaffPuff",96,0.5);
             a_giveinventory("BiteCooldown",1);
-            A_HandleResource(WAC_THRESHOLD, 0);
+            A_HandleResource(WAC_THRESHOLD);
         }
         CSSF M 2 Offset (0,45);
         CSSF A 1 Offset (0,40);
@@ -88,7 +89,15 @@ class PaladinStaff : weaponbase
         }
         goto ready+2;
     Reload:
-        tnt1 a 0 a_checkattackresource(WAC_ULTIMATE,null,"OOMhold",WSC_NOMANA);
+        tnt1 a 0
+        {
+            if(countinv("putrefactionaura") > 0)
+                return a_checkattackresource(WAC_ULTIMATE,null,"OOMhold",WSC_NOMANA);
+            else
+                return a_checkattackresource(WAC_SPECIAL,null,"OOMhold",WSC_NOMANA);
+
+            return resolvestate(null);
+        }
         tnt1 a 0 a_jumpifinventory("PowerCorruptioncooldown",1,"actualready");
         CSCB ABBCCCCCC 1;
         CSCB D 2
@@ -102,13 +111,15 @@ class PaladinStaff : weaponbase
                 A_setblend("olivedrab3",.8,18);
                 a_startsound("corrupt");
                 a_giveinventory("CorruptionCooldown",1);
+                A_HandleResource(WAC_ULTIMATE);
             }
             else
             {
                 a_startsound("corrupt2");
                 a_giveinventory("CorruptionCooldownShort",1);
+                A_HandleResource(WAC_SPECIAL);
             }
-            A_HandleResource(WAC_ULTIMATE, 0);
+
 
         }
         tnt1 a 0 a_CStaffCorrupt(countinv("putrefactionaura") > 0);
@@ -544,13 +555,13 @@ class SerpentStaffMissile : CStaffMissile
     states
     {
         XDeath:
-            TNT1 a 0
+            /*TNT1 a 0
             {
                 if(target && target.player && target.player.readyweapon)
                 {
-                    WeaponBase(target.Player.Readyweapon).a_handleresource(WeaponBase.WAC_BASIC, 2);
+                    WeaponBase(target.Player.Readyweapon).a_handleresource(WeaponBase.WAC_BASIC, True);
                 }
-            }
+            }*/
         Crash:
             goto super::Death;
     }

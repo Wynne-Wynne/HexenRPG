@@ -17,6 +17,7 @@ class HexenRPGHud : BaseStatusBar
     Enum attackTypes
     {
         WAC_BAS,
+        WAC_MAN,
         WAC_THR,
         WAC_SPEC,
         WAC_ULT,
@@ -135,8 +136,14 @@ class HexenRPGHud : BaseStatusBar
         {
             switch(AttackType)
             {
+                case WAC_MAN:
+                    if(CPlayer.mo.findinventory("mana1").amount < 8 )
+                    {
+                        drawflags = drawflags|DI_DIM;
+                    }
+                    break;
                 case WAC_THR:
-                    if(CPlayer.mo.findinventory("mana1").amount < 60 )
+                    if(CPlayer.mo.findinventory("mana1").amount < 20 )
                     {
                         drawflags = drawflags|DI_DIM;
                     }
@@ -269,13 +276,13 @@ class HexenRPGHud : BaseStatusBar
             }
             else if(wep == "Serpent Staff")
             {
-                DrawAbility("SSSBA0", ability1Pos, WAC_BAS, BT_ATTACK);
+                DrawAbility("SSSBA0", ability1Pos, WAC_MAN, BT_ATTACK);
                 DrawAbility("CSTRKA0", ability2Pos, WAC_THR, BT_ALTATTACK);
                 DrawCoolDown("Powerbitecooldown", (-36.5,-52), (-9.2, -16),(-36.5,-35));
 
                 if(CPLAYER.mo.findinventory("PutrefactionAura"))
                 {
-                    DrawAbility("PTRAA0", ability3Pos, WAC_SPEC, BT_RELOAD);
+                    DrawAbility("PTRAA0", ability3Pos, WAC_ULT, BT_RELOAD);
                     DrawCooldown("powerCorruptionCooldown",(38.4,-52),(28, -16),(1.95,-35),"powerCorruptionCooldownShort");
 
                     // Draw border on selected aura
