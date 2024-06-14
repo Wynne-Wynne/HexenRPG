@@ -10,6 +10,7 @@ version "4.12.0"
 #include "source/Weapons/Paladin/Staff.zsc"
 #include "source/HUD.zsc"
 #include "source/EventHandlers.zsc"
+#include "source/Items.zsc"
 
 
 /*class HexenEventHandler : EventHandler

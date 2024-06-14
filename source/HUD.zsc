@@ -287,6 +287,7 @@ class HexenRPGHud : BaseStatusBar
                     DrawAbility("PTRIA0", ability3Pos, WAC_SPEC, BT_RELOAD);
                     DrawCooldown("powerCorruptionCooldownshort",(38.8,-52),(28, -16),(1.95,-35),"powerCorruptionCooldown");
                 }
+                 DrawAbility("RAURA0",ability4Pos,0, BT_ZOOM);
             }
 
         }

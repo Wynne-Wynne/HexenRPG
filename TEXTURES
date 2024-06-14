@@ -66,6 +66,13 @@ Texture "PAURA0", 28, 27
 	Patch "PAURA0", 0, 0
 }
 
+Texture "RAURA0", 28, 27
+{
+	XScale 0.833
+	Patch "RAURA0", 0, 0
+}
+
+
 Texture "CDOWN", 10, 10
 {
 	Patch "CDOWN", 0, 0

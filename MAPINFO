@@ -1,5 +1,5 @@
 Gameinfo{
     PlayerClasses="Paladin"
-    AddEventHandlers = "MonsterDropHandler"
+    AddEventHandlers = "MonsterDropHandler"//, "ItemRemoverHandler"
     StatusBarClass = "HexenRPGHud"
     }
