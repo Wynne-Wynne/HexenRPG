@@ -4,7 +4,7 @@ class ManaOrb : Mana1
      {
         Inventory.amount 30;
         Ammo.DropAmount 30;
-        Inventory.pickupMessage "MANA ORB";
+        Inventory.pickupMessage "Mana Orb";
      }
 }
 

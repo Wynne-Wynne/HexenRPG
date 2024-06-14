@@ -155,7 +155,7 @@ class HexenRPGHud : BaseStatusBar
                     }
                     break;
                 case WAC_ULT:
-                    if(CPlayer.mo.findinventory("mana1").amount < 100 )
+                    if(CPlayer.mo.findinventory("mana1").amount < 80 )
                     {
                         drawflags = drawflags|DI_DIM;
                     }

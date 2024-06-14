@@ -8,9 +8,17 @@ class MonsterDropHandler : EventHandler
         }
     }
 
-    void handleManaDrops(Actor t)
+    override void worldthingdestroyed(worldevent e)
     {
-        let dropchance = 65; // 65 out of 256 base chance
+        if (e.thing && e.thing.bIsMonster && e.thing.checkinventory("corpseBurnController",1))
+        {
+           handleManaDrops(e.thing,2.5);
+        }
+    }
+
+    void handleManaDrops(Actor t, int dropChanceMultiplier = 1.0, int baseChance = 65)
+    {
+        let dropchance = baseChance; // 65 out of 256 base chance
 
          // check for drop chance increases
          if (t.findinventory("petrify"))
