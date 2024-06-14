@@ -282,7 +282,7 @@ class HexenRPGHud : BaseStatusBar
 
                 if(CPLAYER.mo.findinventory("PutrefactionAura"))
                 {
-                    DrawAbility("PTRAA0", ability3Pos, WAC_ULT, BT_RELOAD);
+                    DrawAbility("CBLAB0", ability3Pos, WAC_ULT, BT_RELOAD);
                     DrawCooldown("powerCorruptionCooldown",(38.4,-52),(28, -16),(1.95,-35),"powerCorruptionCooldownShort");
 
                     // Draw border on selected aura
@@ -291,7 +291,7 @@ class HexenRPGHud : BaseStatusBar
                 }
                 else
                 {
-                    DrawAbility("PTRIA0", ability3Pos, WAC_SPEC, BT_RELOAD);
+                    DrawAbility("CBLAA0", ability3Pos, WAC_SPEC, BT_RELOAD);
                     DrawCooldown("powerCorruptionCooldownshort",(38.8,-52),(28, -16),(1.95,-35),"powerCorruptionCooldown");
                 }
                  DrawAbility("RAURA0",ability4Pos,0, BT_ZOOM);

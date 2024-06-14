@@ -1,0 +1,21 @@
+class MonsterDropHandler : EventHandler
+{
+    override void WorldThingDied(WorldEvent e)
+    {
+        if (e.thing && e.thing.bIsMonster)
+        {
+           handleManaDrops(e.thing);
+        }
+    }
+
+    void handleManaDrops(Actor t)
+    {
+        let dropchance = 65; // 65 out of 256 base chance
+
+         // check for drop chance increases
+         if (t.findinventory("petrify"))
+                dropchance = dropchance * 2;
+        t.A_DropItem("ManaOrb",-1,dropchance);
+    }
+}
+

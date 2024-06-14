@@ -15,6 +15,7 @@ snekbite "sounds/spit.wav"
 $pitchshiftrange 0
 Fixation "Sounds/Fixation.wav"
 Putrefaction "Sounds/Putrefaction.wav"
+Redemption "Sounds/Redepmtion.wav"
 Petr "Sounds/Petr.wav"
 Petr2 "Sounds/Petr2.wav"
 snekcharge "sounds/spitcharge.wav"

@@ -11,7 +11,7 @@ class PutrThorns : powerreflection
 {
     default
     {
-        DamageFactor 5.0;
+        DamageFactor 6.5;
     }
 }
 

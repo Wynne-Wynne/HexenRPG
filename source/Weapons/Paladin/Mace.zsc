@@ -179,7 +179,7 @@ class PaladinMace : WeaponBase //CWeapMace
         MACB C 1;
         MACB B 8
         {
-            A_macePush(64); //was 18
+            A_macePush(30); //was 18
         }
         MACB B 5 Offset (-4,28);
         MACB C 5 Offset (-8,25);
