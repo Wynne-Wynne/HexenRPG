@@ -11,7 +11,7 @@ class PutrThorns : powerreflection
 {
     default
     {
-        DamageFactor 5.0;
+        DamageFactor 6.5;
     }
 }
 
@@ -115,6 +115,40 @@ class sagttAura: PutrefactionAuraCircle
     }
 }
 
+class corpseburnflame : fswordflame
+{
+    default
+    {
+        renderstyle "subtract";
+        alpha 0.1;
+        scale 4.0;
+    }
+}
+
+class corpseBurnController : inventory
+{
+   default{ inventory.maxamount 1;}
+   override void attachtoowner(Actor other)
+   {
+        super.attachtoowner(other);
+
+        if (owner)
+        {
+            owner.s_startsound("redemption",0);
+            owner.a_setrenderstyle(0.9,STYLE_Subtract);
+            //owner.a_dropitem("cstaffpuff");
+            owner.a_spawnitemex("corpseburnflame",0,0,15);
+        }
+   }
+   override void doEffect()
+   {
+        super.doeffect();
+        if (owner)
+            owner.a_fadeout(0.05);
+   }
+
+}
+
 class PutrefactionAuraCircle : OrbitingProjectile
 {
     int user_ticcount;
@@ -131,6 +165,13 @@ class PutrefactionAuraCircle : OrbitingProjectile
         scale 0.5;
         alpha 0.8;
     }
+
+    void corpseBurn()
+    {
+            if( gametic % 70 == 0)
+                a_radiusgive("corpseBurnController",256,RGF_KILLED|RGF_NOSIGHT, 1, null,"",0,2);
+    }
+
     states
     {
         spawn:
@@ -142,9 +183,11 @@ class PutrefactionAuraCircle : OrbitingProjectile
                 a_giveinventory("PutrAuraTHornsGiver",1,AAPTR_Target);
                 //a_giveinventory("fixtauradefgiver",1,AAPTR_Target);
                // a_giveinventory("fixtauragiver",1,AAPTR_Target);
+               corpseburn();
                 if (++user_ticcount % 5 == 0)
                 {
                     //a_radiusgive("fixtauraitemothers",512.0,RGF_PLAYERS|RGF_NOSIGHT,1);
+
                 }
                 if(user_ticcount > 60)
                     user_ticcount = 0;

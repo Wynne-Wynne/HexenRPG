@@ -37,6 +37,8 @@ class Paladin : clericplayer
     {
         super.postbeginplay();
         ticcount = 0;
+        let max_mana = GetAmmoCapacity ("mana1");
+        setinventory("mana1",max_mana);
     }
     override void Tick()
 	{
@@ -59,17 +61,25 @@ class Paladin : clericplayer
     void GlobalCoolDown()
     {
         //number of tics the game pauses mana decay for
+        //if(ticcount)
         ticcount = 350;//countinv("putrefactionaura") > 0 ? 25 : 50;
     }
 
     void ManaRegen()
     {
-        let regenamount = 10;//(countinv("putrefactionaura") > 0) ? 5:0;
-        //mana and stamina is 200 base for cleric
-        if(countinv("Mana1") >= 100)
-            setinventory("mana1",100);
-        else if(ManaRegeneration)
-            takeinventory("Mana1",regenamount);
+        /*let regenamount = (countinv("putrefactionaura") > 0) ? 20:10;
+        let max_regen = (countinv("putrefactionaura") > 0) ? 100:50;
+        let max_mana = GetAmmoCapacity ("mana1");
 
+        if(countinv("Mana1") >= max_mana)
+            setinventory("mana1",max_mana);
+        else if(ManaRegeneration)
+            if(countinv("Mana1") < 50)
+                giveinventory("Mana1",regenamount);
+            else if(countinv("Mana1") > 50)
+                takeinventory("Mana1",regenamount);*/
+        let max_mana = GetAmmoCapacity ("mana1");
+        if(countinv("Mana1") < max_mana)
+                giveinventory("Mana1",1);
     }
 }

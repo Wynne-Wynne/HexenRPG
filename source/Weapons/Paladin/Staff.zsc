@@ -40,12 +40,13 @@ class PaladinStaff : weaponbase
 		CSSF A 1 A_CStaffCheckBlink;
 		Goto Ready + 2;
 	Fire:
-        //tnt1 a 0 a_checkattackresource(WAC_MAINATTACK,null,"OOMhold",WSC_NOMANA);
+        tnt1 a 0 a_checkattackresource(WAC_MANABASIC,null,"OOMhold",WSC_NOMANA);
 		CSSF A 1 Offset (0, 45) ;//A_CStaffCheck;
 		CSSF J 1 Offset (0, 50)
         {
             a_alertmonsters();
             A_CStaffAttack();
+            A_HandleResource(WAC_MANABASIC);
         }
 		CSSF J 2 Offset (0, 50);
 		CSSF J 2 Offset (0, 45);
@@ -88,7 +89,15 @@ class PaladinStaff : weaponbase
         }
         goto ready+2;
     Reload:
-        tnt1 a 0 a_checkattackresource(WAC_ULTIMATE,null,"OOMhold",WSC_NOMANA);
+        tnt1 a 0
+        {
+            if(countinv("putrefactionaura") > 0)
+                return a_checkattackresource(WAC_ULTIMATE,null,"OOMhold",WSC_NOMANA);
+            else
+                return a_checkattackresource(WAC_SPECIAL,null,"OOMhold",WSC_NOMANA);
+
+            return resolvestate(null);
+        }
         tnt1 a 0 a_jumpifinventory("PowerCorruptioncooldown",1,"actualready");
         CSCB ABBCCCCCC 1;
         CSCB D 2
@@ -102,13 +111,15 @@ class PaladinStaff : weaponbase
                 A_setblend("olivedrab3",.8,18);
                 a_startsound("corrupt");
                 a_giveinventory("CorruptionCooldown",1);
+                A_HandleResource(WAC_ULTIMATE);
             }
             else
             {
                 a_startsound("corrupt2");
                 a_giveinventory("CorruptionCooldownShort",1);
+                A_HandleResource(WAC_SPECIAL);
             }
-            A_HandleResource(WAC_ULTIMATE);
+
 
         }
         tnt1 a 0 a_CStaffCorrupt(countinv("putrefactionaura") > 0);
@@ -208,6 +219,7 @@ class PaladinStaff : weaponbase
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
+
 		Actor mo = SpawnPlayerMissile ("SerpentStaffMissile", angle - 3.0);
 		if (mo)
 		{
@@ -539,12 +551,27 @@ class SerpentStaffMissile : CStaffMissile
         damageFunction 8;
         Poisondamage 2,5;
     }
+
+    states
+    {
+        XDeath:
+            /*TNT1 a 0
+            {
+                if(target && target.player && target.player.readyweapon)
+                {
+                    WeaponBase(target.Player.Readyweapon).a_handleresource(WeaponBase.WAC_BASIC, True);
+                }
+            }*/
+        Crash:
+            goto super::Death;
+    }
+
     override void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
 	}
 
-    override int DoSpecialDamage(Actor target, int damage, name damagetype)
+   /*override int DoSpecialDamage(Actor target, int damage, name damagetype)
     {
 
         //must be handled specially to avoid overfilling player mana
@@ -553,11 +580,11 @@ class SerpentStaffMissile : CStaffMissile
         {
             if(pl.readyweapon)
             {
-                weaponbase(pl.ReadyWeapon).testmissileprojectile();
+                //weaponbase(pl.ReadyWeapon).testmissileprojectile();
                 weaponbase(pl.ReadyWeapon).A_HandleResource(weaponbase.WAC_BASIC);
             }
         }
         return super.DoSpecialDamage(target, damage, damagetype);
-    }
+    }*/
 }
 

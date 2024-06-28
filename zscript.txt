@@ -1,4 +1,4 @@
-version "4.7.1"
+version "4.12.0"
 
 #include "source/Projectiles.zsc"
 #include "source/Classes.zsc"
@@ -9,15 +9,16 @@ version "4.7.1"
 #include "source/Weapons/Paladin/Mace.zsc"
 #include "source/Weapons/Paladin/Staff.zsc"
 #include "source/HUD.zsc"
+#include "source/EventHandlers.zsc"
+#include "source/Items.zsc"
 
 
-
-
-
-/*class GetInput : EventHandler
+/*class HexenEventHandler : EventHandler
 {
 
-    override bool InputProcess (InputEvent e)
+
+
+    /*override bool InputProcess (InputEvent e)
    {
       if (e.Type == InputEvent.Type_KeyDown && automapactive == false) // not when automap is active
         if(e.keyScan == 256 || e.keyScan == 257)
@@ -49,8 +50,6 @@ version "4.7.1"
             }
         }
    }
+   }
+*/
 
-
-
-
-}*/

@@ -17,6 +17,7 @@ class HexenRPGHud : BaseStatusBar
     Enum attackTypes
     {
         WAC_BAS,
+        WAC_MAN,
         WAC_THR,
         WAC_SPEC,
         WAC_ULT,
@@ -116,7 +117,7 @@ class HexenRPGHud : BaseStatusBar
     void DrawOrbs()
     {
         drawbar("horb","norb",mhealthinterpolator.getvalue(),100,(-129,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
-        drawbar("morb","norb2",mManaInterpolator.getvalue(),100,(79,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
+        drawbar("morb","norb2",mManaInterpolator.getvalue(),200,(79,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
 
       //  drawbar("sorb","norb2",mStaminaInterpolator.getvalue(),200,(107,-45),0,3,DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
         DrawImage("HBAR", (-176, -65), DI_ITEM_OFFSETS|DI_SCREEN_CENTER_BOTTOM);
@@ -135,8 +136,14 @@ class HexenRPGHud : BaseStatusBar
         {
             switch(AttackType)
             {
+                case WAC_MAN:
+                    if(CPlayer.mo.findinventory("mana1").amount < 8 )
+                    {
+                        drawflags = drawflags|DI_DIM;
+                    }
+                    break;
                 case WAC_THR:
-                    if(CPlayer.mo.findinventory("mana1").amount < 60 )
+                    if(CPlayer.mo.findinventory("mana1").amount < 20 )
                     {
                         drawflags = drawflags|DI_DIM;
                     }
@@ -148,7 +155,7 @@ class HexenRPGHud : BaseStatusBar
                     }
                     break;
                 case WAC_ULT:
-                    if(CPlayer.mo.findinventory("mana1").amount < 100 )
+                    if(CPlayer.mo.findinventory("mana1").amount < 80 )
                     {
                         drawflags = drawflags|DI_DIM;
                     }
@@ -269,13 +276,13 @@ class HexenRPGHud : BaseStatusBar
             }
             else if(wep == "Serpent Staff")
             {
-                DrawAbility("SSSBA0", ability1Pos, WAC_BAS, BT_ATTACK);
+                DrawAbility("SSSBA0", ability1Pos, WAC_MAN, BT_ATTACK);
                 DrawAbility("CSTRKA0", ability2Pos, WAC_THR, BT_ALTATTACK);
                 DrawCoolDown("Powerbitecooldown", (-36.5,-52), (-9.2, -16),(-36.5,-35));
 
                 if(CPLAYER.mo.findinventory("PutrefactionAura"))
                 {
-                    DrawAbility("PTRAA0", ability3Pos, WAC_SPEC, BT_RELOAD);
+                    DrawAbility("CBLAB0", ability3Pos, WAC_ULT, BT_RELOAD);
                     DrawCooldown("powerCorruptionCooldown",(38.4,-52),(28, -16),(1.95,-35),"powerCorruptionCooldownShort");
 
                     // Draw border on selected aura
@@ -284,9 +291,10 @@ class HexenRPGHud : BaseStatusBar
                 }
                 else
                 {
-                    DrawAbility("PTRIA0", ability3Pos, WAC_SPEC, BT_RELOAD);
+                    DrawAbility("CBLAA0", ability3Pos, WAC_SPEC, BT_RELOAD);
                     DrawCooldown("powerCorruptionCooldownshort",(38.8,-52),(28, -16),(1.95,-35),"powerCorruptionCooldown");
                 }
+                 DrawAbility("RAURA0",ability4Pos,0, BT_ZOOM);
             }
 
         }

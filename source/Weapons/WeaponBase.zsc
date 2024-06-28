@@ -30,6 +30,7 @@ Class WeaponBase : Weapon
     {
         WAC_NONE,
         WAC_BASIC,
+        WAC_MANABASIC,
         WAC_THRESHOLD,
         WAC_SPECIAL,
         WAC_ULTIMATE,
@@ -68,24 +69,31 @@ Class WeaponBase : Weapon
         //activate global cooldown
         //TODO: replace this with generic playerpawn class that all player
         //classes will inherit from
-        paladin(self).globalcooldown();
-        switch(AttackType)
+
+        let max_mana = GetAmmoCapacity ("mana1");
+
+        if(invoker && invoker.owner)
         {
-            case WAC_BASIC:
-                if(countinv("mana1") >= 92)
-                    setinventory("mana1",100);
-                else
-                    giveinventory("mana1",4);
-                break;
-            case WAC_THRESHOLD:
-                takeinventory("mana1",20);
-                break;
-            case WAC_SPECIAL:
-                takeinventory("mana1",45);
-                break;
-            case WAC_ULTIMATE:
-                takeinventory("mana1",100);
-                break;
+            let plr = invoker.owner;
+            paladin(plr).globalcooldown();
+
+            switch(AttackType)
+            {
+                case WAC_BASIC:
+                    break;
+                case WAC_MANABASIC:
+                    plr.takeinventory("mana1",4);
+                    break;
+                case WAC_THRESHOLD:
+                    plr.takeinventory("mana1",20);
+                    break;
+                case WAC_SPECIAL:
+                    plr.takeinventory("mana1",45);
+                    break;
+                case WAC_ULTIMATE:
+                    plr.takeinventory("mana1",80);
+                    break;
+            }
         }
     }
 
@@ -122,8 +130,12 @@ Class WeaponBase : Weapon
             case WAC_BASIC:
                 return resolvestate(statesuccess);
                 break;
+            case WAC_MANABASIC:
+                if(countinv("mana1") >= 8)
+                    return resolvestate(statesuccess);
+                break;
             case WAC_THRESHOLD:
-                if(countinv("mana1") >= 60)
+                if(countinv("mana1") >= 20)
                     return resolvestate(statesuccess);
                 break;
             case WAC_SPECIAL:
@@ -131,7 +143,7 @@ Class WeaponBase : Weapon
                     return resolvestate(statesuccess);
                 break;
             case WAC_ULTIMATE:
-                if(countinv("mana1") >= 100)
+                if(countinv("mana1") >= 80)
                     return resolvestate(statesuccess);
                 break;
         }
@@ -181,9 +193,5 @@ Class WeaponBase : Weapon
             return a_checkattackresource(attackTYPE,AltComboContinueState,null);
         }
         return resolvestate(null);
-    }
-    action void testmissileprojectile()
-    {
-        a_log("boop");
     }
 }

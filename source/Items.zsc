@@ -1,0 +1,32 @@
+class ManaOrb : Mana1
+{
+     default
+     {
+        Inventory.amount 30;
+        Ammo.DropAmount 30;
+        Inventory.pickupMessage "Mana Orb";
+     }
+}
+
+// We don't want regular mana orbs spawning
+class nullmana1 : nullactor replaces Mana1{ }
+class nullmana2 : nullactor replaces Mana2{ }
+
+// Thanks to ZDoom discord user "Agent_Ash" for the RNG bullshit prevention
+class nullactor : actor
+{
+    default
+    {
+        +NOINTERACTION
+        +NOBLOCKMAP
+        +SYNCHRONIZED
+        +DONTBLAST
+        FloatBobPhase 0;
+        radius 0;
+        height 0;
+    }
+    override void PostBeginPlay()
+    {
+        Destroy();
+    }
+}
